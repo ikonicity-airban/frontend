@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLogin } from "../api/auth";
 import { LockIcon, MailIcon, AlertCircleIcon } from "lucide-react";
 import { useNotification } from "../context/NotificationContext";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 
 import Cookies from "js-cookie";
 import { CONSTANTS } from "../lib/constants";
@@ -25,13 +25,17 @@ const Login: React.FC = () => {
       { email, password },
       {
         onError: (error) => {
-          if (error instanceof AxiosError) {
+          let errorMessage = "";
+          if (isAxiosError(error)) {
+            errorMessage =
+              error?.response?.data.message.message ??
+              error?.response?.data.message ??
+              error.message;
+          } else {
+            errorMessage = "Something went wrong.";
           }
-          setError("Invalid email or password");
-          showNotification(
-            "error",
-            "Login failed. Please check your credentials."
-          );
+          setError(errorMessage);
+          showNotification("error", errorMessage);
         },
         onSuccess: (data) => {
           Cookies.set(CONSTANTS.AUTH_TOKEN, data.access_token);
@@ -117,7 +121,9 @@ const Login: React.FC = () => {
             <div className="mt-2 grid grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => setEmail("staff@example.com")}
+                onClick={() => {
+                  setEmail("staff@example.com");
+                }}
                 className="text-indigo-600 hover:text-indigo-500"
               >
                 Staff

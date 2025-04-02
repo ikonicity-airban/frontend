@@ -1,5 +1,7 @@
 // src/types/index.ts
 
+import { UserRoles } from "../../lib/roles";
+
 // Enum types (matching backend)
 export enum UserRole {
   STAFF = "STAFF",
@@ -25,7 +27,7 @@ export interface User {
   username: string;
   firstName: string;
   lastName: string;
-  role: UserRole;
+  role: UserRoles;
   teamId?: string;
   teamLead?: User;
   isActive: boolean;

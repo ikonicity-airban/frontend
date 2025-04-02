@@ -36,6 +36,7 @@ const EvaluationForm: React.FC = () => {
   const { mutateAsync: sendNotification } = useSendEvaluationNotification();
 
   const canEditSelfEvaluation =
+    user &&
     user?.role === UserRoles.EMPLOYEE &&
     (isNewEvaluation || evaluation?.status === "draft");
   const canEditTeamLeadEvaluation =
