@@ -7,7 +7,7 @@ import { useNotification } from "../context/NotificationContext";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserRoles } from "../lib/roles";
-import { useEvaluation } from "../api/evaluations";
+import { useCreateEvaluation, useEvaluation } from "../api/evaluations";
 import {
   evaluationSchema,
   LetterGrade,
@@ -15,6 +15,7 @@ import {
 } from "../types/evaluation";
 import { SelfEvaluation } from "../components/forms/SelfEvaluation";
 import { getFullName } from "../lib/util";
+import { useSendEvaluationNotification } from "../api/notifications";
 
 const GRADE_OPTIONS: LetterGrade[] = ["A", "B+", "B-", "C", "D", "F"];
 
@@ -30,6 +31,9 @@ const EvaluationForm: React.FC = () => {
 
   const { data: evaluation } = useEvaluation(id ?? "");
   console.log("🚀 ~ id:", id);
+
+  const { mutateAsync: createEvaluation } = useCreateEvaluation();
+  const {} = useSendEvaluationNotification();
 
   const canEditSelfEvaluation =
     user?.role === UserRoles.EMPLOYEE &&
@@ -94,12 +98,14 @@ const EvaluationForm: React.FC = () => {
     const suggestedGrade = getGradeFromPoints(
       (selfEvalPoints + teamLeadAvg + hrAvg) / 3
     );
+
     if (
       /* evaluation?.directorEvaluation.finalGrade === '' &&  */ canEditDirectorEvaluation
     ) {
       setValue("directorEvaluation.finalGrade", suggestedGrade);
     }
     showNotification("success", "Evaluation saved successfully!");
+
     setTimeout(() => {
       navigate("/dashboard");
     }, 2000);

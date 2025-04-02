@@ -22,7 +22,7 @@ export const SelfEvaluation: React.FC<SelfEvaluationProps> = ({
       </div>
       <div className="p-6 space-y-6">
         {/* TextArea fields */}
-        {["achievements", "challenges", "goals"].map((field) => (
+        {(["achievements", "challenges", "goals"] as const).map((field) => (
           <div key={field}>
             <label
               htmlFor={field}
@@ -35,7 +35,8 @@ export const SelfEvaluation: React.FC<SelfEvaluationProps> = ({
                 id={field}
                 rows={4}
                 disabled={!canEdit}
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                placeholder={"Describe your " + field}
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-500 rounded-md p-4"
                 {...register(`selfEvaluation.${field}`)}
               />
               {errors.selfEvaluation?.[field] && (
@@ -49,12 +50,14 @@ export const SelfEvaluation: React.FC<SelfEvaluationProps> = ({
 
         {/* Grade selections */}
         <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            "skillsGrade",
-            "communicationGrade",
-            "initiativeGrade",
-            "overallSelfGrade",
-          ].map((field) => (
+          {(
+            [
+              "skillsGrade",
+              "communicationGrade",
+              "initiativeGrade",
+              "overallSelfGrade",
+            ] as const
+          ).map((field) => (
             <div key={field}>
               <label
                 htmlFor={field}

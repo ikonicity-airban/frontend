@@ -15,7 +15,7 @@ type LoginResponse = {
 export const useLogin = () => {
   const mutateAsync = async (data: LoginCredentials) => {
     const response = await api.post<LoginResponse>(
-      `${baseURL}${APIRoutes.AuthLoginPost}`,
+      `${baseURL}${APIRoutes.AuthLogin}`,
       data
     );
     return response.data;
@@ -27,7 +27,7 @@ export const useLogin = () => {
 export const useSignup = () => {
   return useMutation({
     mutationFn: async (data: SignupData) =>
-      (await api.post(APIRoutes.AuthSignupPost, data)).data,
+      (await api.post(APIRoutes.AuthSignup, data)).data,
   });
 };
 
