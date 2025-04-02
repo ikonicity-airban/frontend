@@ -1,36 +1,75 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { UsersIcon, CalendarIcon, SettingsIcon, DownloadIcon, AlertCircleIcon, CheckCircleIcon, ClockIcon, ClipboardCheckIcon } from 'lucide-react';
-// Mock data
-const systemStats = {
-  totalUsers: 58,
-  activeEvaluations: 32,
-  completedEvaluations: 84,
-  currentQuarter: 'Q3 2023'
-};
-const recentActivities = [{
-  id: 1,
-  user: 'Sam HR',
-  action: 'updated evaluation settings',
-  time: '2 hours ago'
-}, {
-  id: 2,
-  user: 'Alex Admin',
-  action: 'added new user Jane Smith',
-  time: '5 hours ago'
-}, {
-  id: 3,
-  user: 'Alex Admin',
-  action: 'generated Q2 report',
-  time: '1 day ago'
-}, {
-  id: 4,
-  user: 'Sam HR',
-  action: 'modified HR evaluation form',
-  time: '2 days ago'
-}];
+import React from "react";
+import { Link } from "react-router-dom";
+import {
+  UsersIcon,
+  CalendarIcon,
+  SettingsIcon,
+  DownloadIcon,
+  AlertCircleIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  ClipboardCheckIcon,
+  ServerIcon,
+} from "lucide-react";
+import {
+  useAdminStats,
+  useSystemHealth,
+  useEvaluationStats,
+} from "../../api/admin";
+import { useNotification } from "../../context/NotificationContext";
+
 const AdminDashboard: React.FC = () => {
-  return <div className="space-y-6">
+  const { data: adminStats, isLoading: statsLoading } = useAdminStats();
+  const { data: healthData, isLoading: healthLoading } = useSystemHealth();
+  const { data: evaluationStats, isLoading: evalStatsLoading } =
+    useEvaluationStats();
+  const { showNotification } = useNotification();
+
+  // Current quarter calculation (could be fetched from settings in a real app)
+  const getCurrentQuarter = () => {
+    const now = new Date();
+    const quarter = Math.floor(now.getMonth() / 3) + 1;
+    return `Q${quarter} ${now.getFullYear()}`;
+  };
+
+  // Mock data for recent activities (would come from an API in a real implementation)
+  const recentActivities = [
+    {
+      id: 1,
+      user: "Sam HR",
+      action: "updated evaluation settings",
+      time: "2 hours ago",
+    },
+    {
+      id: 2,
+      user: "Alex Admin",
+      action: "added new user Jane Smith",
+      time: "5 hours ago",
+    },
+    {
+      id: 3,
+      user: "Alex Admin",
+      action: "generated Q2 report",
+      time: "1 day ago",
+    },
+    {
+      id: 4,
+      user: "Sam HR",
+      action: "modified HR evaluation form",
+      time: "2 days ago",
+    },
+  ];
+
+  // Handler for maintenance notification
+  const handleMaintenanceNotify = () => {
+    showNotification(
+      "info",
+      "Email notification about maintenance has been sent to all admins."
+    );
+  };
+
+  return (
+    <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -45,7 +84,7 @@ const AdminDashboard: React.FC = () => {
                     Total Users
                   </dt>
                   <dd className="text-xl font-semibold text-gray-900">
-                    {systemStats.totalUsers}
+                    {statsLoading ? "..." : adminStats?.usersCount || 0}
                   </dd>
                 </dl>
               </div>
@@ -64,7 +103,7 @@ const AdminDashboard: React.FC = () => {
                     Active Evaluations
                   </dt>
                   <dd className="text-xl font-semibold text-gray-900">
-                    {systemStats.activeEvaluations}
+                    {evalStatsLoading ? "..." : evaluationStats?.pending || 0}
                   </dd>
                 </dl>
               </div>
@@ -83,7 +122,7 @@ const AdminDashboard: React.FC = () => {
                     Completed
                   </dt>
                   <dd className="text-xl font-semibold text-gray-900">
-                    {systemStats.completedEvaluations}
+                    {evalStatsLoading ? "..." : evaluationStats?.completed || 0}
                   </dd>
                 </dl>
               </div>
@@ -102,7 +141,7 @@ const AdminDashboard: React.FC = () => {
                     Current Quarter
                   </dt>
                   <dd className="text-xl font-semibold text-gray-900">
-                    {systemStats.currentQuarter}
+                    {getCurrentQuarter()}
                   </dd>
                 </dl>
               </div>
@@ -110,6 +149,7 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
       {/* System Status */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="px-6 py-5 border-b border-gray-200">
@@ -117,19 +157,58 @@ const AdminDashboard: React.FC = () => {
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div className="bg-green-50 p-4 rounded-lg">
+            <div
+              className={`p-4 rounded-lg ${
+                healthLoading
+                  ? "bg-gray-50"
+                  : healthData?.status === "healthy"
+                  ? "bg-green-50"
+                  : "bg-yellow-50"
+              }`}
+            >
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <CheckCircleIcon className="h-5 w-5 text-green-400" />
+                  {healthLoading ? (
+                    <ClockIcon className="h-5 w-5 text-gray-400" />
+                  ) : healthData?.status === "healthy" ? (
+                    <CheckCircleIcon className="h-5 w-5 text-green-400" />
+                  ) : (
+                    <AlertCircleIcon className="h-5 w-5 text-yellow-400" />
+                  )}
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-green-800">
-                    All systems operational
+                  <h3
+                    className={`text-sm font-medium ${
+                      healthLoading
+                        ? "text-gray-800"
+                        : healthData?.status === "healthy"
+                        ? "text-green-800"
+                        : "text-yellow-800"
+                    }`}
+                  >
+                    {healthLoading
+                      ? "Checking system status..."
+                      : healthData?.status === "healthy"
+                      ? "All systems operational"
+                      : "System needs attention"}
                   </h3>
-                  <div className="mt-2 text-sm text-green-700">
+                  <div
+                    className={`mt-2 text-sm ${
+                      healthLoading
+                        ? "text-gray-700"
+                        : healthData?.status === "healthy"
+                        ? "text-green-700"
+                        : "text-yellow-700"
+                    }`}
+                  >
                     <p>
-                      The evaluation system is running normally with no reported
-                      issues.
+                      {healthLoading
+                        ? "Please wait..."
+                        : healthData?.status === "healthy"
+                        ? `The evaluation system is running normally with uptime of ${Math.floor(
+                            healthData.uptime / 3600
+                          )} hours.`
+                        : "There may be some issues with the system. Check the logs for more details."}
                     </p>
                   </div>
                 </div>
@@ -150,12 +229,22 @@ const AdminDashboard: React.FC = () => {
                       AM.
                     </p>
                   </div>
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                      onClick={handleMaintenanceNotify}
+                    >
+                      Notify all users
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       {/* Quick Actions */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="px-6 py-5 border-b border-gray-200">
@@ -164,7 +253,10 @@ const AdminDashboard: React.FC = () => {
           </h2>
         </div>
         <div className="p-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Link to="/admin/users" className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500">
+          <Link
+            to="/admin/users"
+            className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
+          >
             <div>
               <span className="rounded-lg inline-flex p-3 bg-indigo-50 text-indigo-700 ring-4 ring-white">
                 <UsersIcon size={24} />
@@ -179,7 +271,10 @@ const AdminDashboard: React.FC = () => {
               </p>
             </div>
           </Link>
-          <Link to="/admin/timeline" className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500">
+          <Link
+            to="/admin/timeline"
+            className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
+          >
             <div>
               <span className="rounded-lg inline-flex p-3 bg-green-50 text-green-700 ring-4 ring-white">
                 <CalendarIcon size={24} />
@@ -194,7 +289,10 @@ const AdminDashboard: React.FC = () => {
               </p>
             </div>
           </Link>
-          <Link to="/admin/settings" className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500">
+          <Link
+            to="/admin/settings"
+            className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
+          >
             <div>
               <span className="rounded-lg inline-flex p-3 bg-purple-50 text-purple-700 ring-4 ring-white">
                 <SettingsIcon size={24} />
@@ -209,7 +307,10 @@ const AdminDashboard: React.FC = () => {
               </p>
             </div>
           </Link>
-          <Link to="/admin/forms" className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500">
+          <Link
+            to="/admin/forms"
+            className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
+          >
             <div>
               <span className="rounded-lg inline-flex p-3 bg-blue-50 text-blue-700 ring-4 ring-white">
                 <ClipboardCheckIcon size={24} />
@@ -224,7 +325,10 @@ const AdminDashboard: React.FC = () => {
               </p>
             </div>
           </Link>
-          <Link to="/admin/export" className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500">
+          <Link
+            to="/admin/export"
+            className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
+          >
             <div>
               <span className="rounded-lg inline-flex p-3 bg-yellow-50 text-yellow-700 ring-4 ring-white">
                 <DownloadIcon size={24} />
@@ -239,15 +343,35 @@ const AdminDashboard: React.FC = () => {
               </p>
             </div>
           </Link>
+          <Link
+            to="/admin/system"
+            className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
+          >
+            <div>
+              <span className="rounded-lg inline-flex p-3 bg-red-50 text-red-700 ring-4 ring-white">
+                <ServerIcon size={24} />
+              </span>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                System Health
+              </h3>
+              <p className="mt-2 text-sm text-gray-500">
+                Monitor system performance and logs
+              </p>
+            </div>
+          </Link>
         </div>
       </div>
+
       {/* Recent Activity */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="px-6 py-5 border-b border-gray-200">
           <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
         </div>
         <div className="divide-y divide-gray-200">
-          {recentActivities.map(activity => <div key={activity.id} className="px-6 py-4">
+          {recentActivities.map((activity) => (
+            <div key={activity.id} className="px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="text-sm font-medium text-indigo-600">
@@ -259,14 +383,20 @@ const AdminDashboard: React.FC = () => {
                 </div>
                 <div className="text-sm text-gray-500">{activity.time}</div>
               </div>
-            </div>)}
+            </div>
+          ))}
         </div>
         <div className="px-6 py-4 border-t border-gray-200">
-          <Link to="/admin/activity" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+          <Link
+            to="/admin/activity"
+            className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+          >
             View all activity
           </Link>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default AdminDashboard;

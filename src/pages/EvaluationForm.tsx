@@ -15,7 +15,7 @@ import {
 } from "../types/evaluation";
 import { SelfEvaluation } from "../components/forms/SelfEvaluation";
 import { getFullName } from "../lib/util";
-import { useSendEvaluationNotification } from "../api/notifications";
+import {} from "../api/notifications";
 
 const GRADE_OPTIONS: LetterGrade[] = ["A", "B+", "B-", "C", "D", "F"];
 
@@ -33,9 +33,10 @@ const EvaluationForm: React.FC = () => {
   console.log("🚀 ~ id:", id);
 
   const { mutateAsync: createEvaluation } = useCreateEvaluation();
-  const {} = useSendEvaluationNotification();
+  const { mutateAsync: sendNotification } = useSendEvaluationNotification();
 
   const canEditSelfEvaluation =
+    user &&
     user?.role === UserRoles.EMPLOYEE &&
     (isNewEvaluation || evaluation?.status === "draft");
   const canEditTeamLeadEvaluation =
@@ -82,33 +83,55 @@ const EvaluationForm: React.FC = () => {
   };
 
   // Handle form submission
-  const onSubmit = (data: EvaluationFormValues) => {
-    const teamLeadAvg =
-      (data.teamLeadEvaluation.performanceRating +
-        data.teamLeadEvaluation.teamworkRating +
-        data.teamLeadEvaluation.leadershipRating) /
-      3;
-    const hrAvg =
-      (data.hrEvaluation.attendanceRating +
-        data.hrEvaluation.complianceRating) /
-      2;
-    const selfEvalPoints = getPointsFromGrade(
-      data.selfEvaluation.overallSelfGrade
-    );
-    const suggestedGrade = getGradeFromPoints(
-      (selfEvalPoints + teamLeadAvg + hrAvg) / 3
-    );
+  const onSubmit = async (data: EvaluationFormValues) => {
+    try {
+      // Calculate grades
+      const teamLeadAvg =
+        (data.teamLeadEvaluation.performanceRating +
+          data.teamLeadEvaluation.teamworkRating +
+          data.teamLeadEvaluation.leadershipRating) /
+        3;
+      const hrAvg =
+        (data.hrEvaluation.attendanceRating +
+          data.hrEvaluation.complianceRating) /
+        2;
+      const selfEvalPoints = getPointsFromGrade(
+        data.selfEvaluation.overallSelfGrade
+      );
+      const suggestedGrade = getGradeFromPoints(
+        (selfEvalPoints + teamLeadAvg + hrAvg) / 3
+      );
 
-    if (
-      /* evaluation?.directorEvaluation.finalGrade === '' &&  */ canEditDirectorEvaluation
-    ) {
-      setValue("directorEvaluation.finalGrade", suggestedGrade);
+      if (canEditDirectorEvaluation) {
+        setValue("directorEvaluation.finalGrade", suggestedGrade);
+      }
+
+      // Save evaluation
+      const savedEvaluation = await createEvaluation(data);
+
+      // Send notifications based on status
+      if (isNewEvaluation || evaluation?.status === "draft") {
+        await sendNotification({
+          evaluationId: savedEvaluation.id,
+          type: "EVALUATION_SUBMITTED",
+          recipientRole: "LEAD",
+          message: "New evaluation submitted for review",
+        });
+      }
+
+      setSuccessMessage("Evaluation saved successfully!");
+      showNotification("success", "Evaluation saved successfully!");
+      setErrorMessage("");
+
+      // Redirect after short delay
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
+    } catch (error) {
+      setErrorMessage("Failed to save evaluation. Please try again.");
+      setSuccessMessage("");
+      console.error("Evaluation submission error:", error);
     }
-    showNotification("success", "Evaluation saved successfully!");
-
-    setTimeout(() => {
-      navigate("/dashboard");
-    }, 2000);
   };
 
   return (
