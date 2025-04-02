@@ -1,0 +1,272 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { UsersIcon, CalendarIcon, SettingsIcon, DownloadIcon, AlertCircleIcon, CheckCircleIcon, ClockIcon, ClipboardCheckIcon } from 'lucide-react';
+// Mock data
+const systemStats = {
+  totalUsers: 58,
+  activeEvaluations: 32,
+  completedEvaluations: 84,
+  currentQuarter: 'Q3 2023'
+};
+const recentActivities = [{
+  id: 1,
+  user: 'Sam HR',
+  action: 'updated evaluation settings',
+  time: '2 hours ago'
+}, {
+  id: 2,
+  user: 'Alex Admin',
+  action: 'added new user Jane Smith',
+  time: '5 hours ago'
+}, {
+  id: 3,
+  user: 'Alex Admin',
+  action: 'generated Q2 report',
+  time: '1 day ago'
+}, {
+  id: 4,
+  user: 'Sam HR',
+  action: 'modified HR evaluation form',
+  time: '2 days ago'
+}];
+const AdminDashboard: React.FC = () => {
+  return <div className="space-y-6">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                <UsersIcon className="h-6 w-6 text-white" />
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">
+                    Total Users
+                  </dt>
+                  <dd className="text-xl font-semibold text-gray-900">
+                    {systemStats.totalUsers}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                <ClockIcon className="h-6 w-6 text-white" />
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">
+                    Active Evaluations
+                  </dt>
+                  <dd className="text-xl font-semibold text-gray-900">
+                    {systemStats.activeEvaluations}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
+                <CheckCircleIcon className="h-6 w-6 text-white" />
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">
+                    Completed
+                  </dt>
+                  <dd className="text-xl font-semibold text-gray-900">
+                    {systemStats.completedEvaluations}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-purple-500 rounded-md p-3">
+                <CalendarIcon className="h-6 w-6 text-white" />
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">
+                    Current Quarter
+                  </dt>
+                  <dd className="text-xl font-semibold text-gray-900">
+                    {systemStats.currentQuarter}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* System Status */}
+      <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="px-6 py-5 border-b border-gray-200">
+          <h2 className="text-lg font-medium text-gray-900">System Status</h2>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="bg-green-50 p-4 rounded-lg">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <CheckCircleIcon className="h-5 w-5 text-green-400" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-green-800">
+                    All systems operational
+                  </h3>
+                  <div className="mt-2 text-sm text-green-700">
+                    <p>
+                      The evaluation system is running normally with no reported
+                      issues.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-yellow-50 p-4 rounded-lg">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <AlertCircleIcon className="h-5 w-5 text-yellow-400" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-yellow-800">
+                    Upcoming maintenance
+                  </h3>
+                  <div className="mt-2 text-sm text-yellow-700">
+                    <p>
+                      System maintenance scheduled for Sunday, 10:00 PM - 12:00
+                      AM.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Quick Actions */}
+      <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="px-6 py-5 border-b border-gray-200">
+          <h2 className="text-lg font-medium text-gray-900">
+            Administrative Actions
+          </h2>
+        </div>
+        <div className="p-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <Link to="/admin/users" className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500">
+            <div>
+              <span className="rounded-lg inline-flex p-3 bg-indigo-50 text-indigo-700 ring-4 ring-white">
+                <UsersIcon size={24} />
+              </span>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Manage Users
+              </h3>
+              <p className="mt-2 text-sm text-gray-500">
+                Add, edit, or deactivate user accounts
+              </p>
+            </div>
+          </Link>
+          <Link to="/admin/timeline" className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500">
+            <div>
+              <span className="rounded-lg inline-flex p-3 bg-green-50 text-green-700 ring-4 ring-white">
+                <CalendarIcon size={24} />
+              </span>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Timeline Management
+              </h3>
+              <p className="mt-2 text-sm text-gray-500">
+                Set up quarters and deadlines
+              </p>
+            </div>
+          </Link>
+          <Link to="/admin/settings" className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500">
+            <div>
+              <span className="rounded-lg inline-flex p-3 bg-purple-50 text-purple-700 ring-4 ring-white">
+                <SettingsIcon size={24} />
+              </span>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                System Settings
+              </h3>
+              <p className="mt-2 text-sm text-gray-500">
+                Configure system parameters and notifications
+              </p>
+            </div>
+          </Link>
+          <Link to="/admin/forms" className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500">
+            <div>
+              <span className="rounded-lg inline-flex p-3 bg-blue-50 text-blue-700 ring-4 ring-white">
+                <ClipboardCheckIcon size={24} />
+              </span>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Form Builder
+              </h3>
+              <p className="mt-2 text-sm text-gray-500">
+                Customize evaluation forms and questions
+              </p>
+            </div>
+          </Link>
+          <Link to="/admin/export" className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500">
+            <div>
+              <span className="rounded-lg inline-flex p-3 bg-yellow-50 text-yellow-700 ring-4 ring-white">
+                <DownloadIcon size={24} />
+              </span>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Export Reports
+              </h3>
+              <p className="mt-2 text-sm text-gray-500">
+                Generate and download CSV/PDF reports
+              </p>
+            </div>
+          </Link>
+        </div>
+      </div>
+      {/* Recent Activity */}
+      <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="px-6 py-5 border-b border-gray-200">
+          <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
+        </div>
+        <div className="divide-y divide-gray-200">
+          {recentActivities.map(activity => <div key={activity.id} className="px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="text-sm font-medium text-indigo-600">
+                    {activity.user}
+                  </div>
+                  <div className="mx-2 text-sm text-gray-500">
+                    {activity.action}
+                  </div>
+                </div>
+                <div className="text-sm text-gray-500">{activity.time}</div>
+              </div>
+            </div>)}
+        </div>
+        <div className="px-6 py-4 border-t border-gray-200">
+          <Link to="/admin/activity" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+            View all activity
+          </Link>
+        </div>
+      </div>
+    </div>;
+};
+export default AdminDashboard;
