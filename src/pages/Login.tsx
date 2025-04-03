@@ -7,6 +7,7 @@ import { isAxiosError } from "axios";
 
 import Cookies from "js-cookie";
 import { CONSTANTS } from "../lib/constants";
+import { useAuthStore } from "../store/authStore";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +15,8 @@ const Login: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { showNotification } = useNotification();
+  const setUser = useAuthStore((state) => state.setUser);
+
 
   const loginMutation = useLogin();
 
@@ -38,6 +41,7 @@ const Login: React.FC = () => {
           showNotification("error", errorMessage);
         },
         onSuccess: (data) => {
+          setUser(data.user)
           Cookies.set(CONSTANTS.AUTH_TOKEN, data.access_token);
           Cookies.set(CONSTANTS.SESSION_ID, data.session_id);
           showNotification("success", "Login successful! Welcome back.");
@@ -116,9 +120,10 @@ const Login: React.FC = () => {
               {loginMutation.isPending ? "Signing in..." : "Sign in"}
             </button>
           </div>
-          <div className="text-sm text-center text-gray-600">
-            <p>Demo accounts (password: password):</p>
-            <div className="mt-2 grid grid-cols-3 gap-2">
+          <div className="text-sm text-center text-gray-600 space-x-4">
+            Demo passwords:{" "}
+            <button onClick={() => setPassword("secret-password")}>click here</button>
+            <div className="mt-2 grid grid-cols-3 gap-2 text-red-400">
               <button
                 type="button"
                 onClick={() => {

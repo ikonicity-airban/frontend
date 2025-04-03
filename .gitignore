@@ -7,7 +7,6 @@ yarn-error.log*
 # Build output
 dist/
 build/
-
 # Logs
 logs/
 *.log
@@ -17,6 +16,12 @@ logs/
 .env
 .env.local
 .env.*.local
+
+# lock files
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+bun.lock*
 
 # IDE files
 .vscode/

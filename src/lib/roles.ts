@@ -4,4 +4,5 @@ export enum UserRoles {
   HR = "HR",
   DIRECTOR = "DIRECTOR",
   ADMIN = "ADMIN",
+  STAFF = "STAFF",
 }

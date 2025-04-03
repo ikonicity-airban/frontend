@@ -29,12 +29,12 @@ const Header: React.FC = () => {
             <div className="ml-4 flex items-center">
               <div className="flex-shrink-0">
                 <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium">
-                  {user?.firstName.charAt(0)}
+                  {user?.name.charAt(0)}
                 </div>
               </div>
               <div className="ml-3">
                 <div className="text-sm font-medium text-gray-700">
-                  {user?.firstName} {user?.lastName}
+                  {user?.name}
                 </div>
                 <div className="text-xs text-gray-500 capitalize">
                   {user?.role}

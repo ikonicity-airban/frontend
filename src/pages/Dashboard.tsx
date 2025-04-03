@@ -12,6 +12,7 @@ const Dashboard: React.FC = () => {
   const renderDashboard = () => {
     switch (user?.role) {
       case UserRoles.EMPLOYEE:
+      case UserRoles.STAFF:
         return <StaffDashboard />;
       case UserRoles.LEAD:
         return <TeamLeadDashboard />;
