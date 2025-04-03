@@ -1,23 +1,26 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { SaveIcon, CheckCircleIcon, XCircleIcon } from "lucide-react";
-import ProgressTracker from "../components/common/ProgressTracker";
-import { useNotification } from "../context/NotificationContext";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UserRoles } from "../lib/roles";
-import { useCreateEvaluation, useEvaluation } from "../api/evaluations";
-import {
-  evaluationSchema,
-  LetterGrade,
-  EvaluationFormValues,
-} from "../types/evaluation";
-import { SelfEvaluation } from "../components/forms/SelfEvaluation";
-import { getFullName } from "../lib/util";
 import {} from "../api/notifications";
 
-const GRADE_OPTIONS: LetterGrade[] = ["A", "B+", "B-", "C", "D", "F"];
+import { CheckCircleIcon, SaveIcon, XCircleIcon } from "lucide-react";
+import {
+  EvaluationFormValues,
+  LetterGrade,
+  evaluationSchema,
+} from "../types/evaluation";
+import { useCreateEvaluation, useEvaluation } from "../api/evaluations";
+import { useNavigate, useParams } from "react-router-dom";
+
+import { EvaluationStatus } from "../api/types";
+import ProgressTracker from "../components/common/ProgressTracker";
+import React from "react";
+import { SelfEvaluation } from "../components/forms/SelfEvaluation";
+import { UserRoles } from "../lib/roles";
+import { getFullName } from "../lib/util";
+import { useAuth } from "../context/AuthContext";
+import { useForm } from "react-hook-form";
+import { useNotification } from "../context/NotificationContext";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const GRADE_OPTIONS: LetterGrade[] = ["A", "B+", "B-", "C", "D", "F"] as const;
 
 const EvaluationForm: React.FC = () => {
   const { id } = useParams<{
@@ -33,19 +36,22 @@ const EvaluationForm: React.FC = () => {
   console.log("🚀 ~ id:", id);
 
   const { mutateAsync: createEvaluation } = useCreateEvaluation();
-  const { mutateAsync: sendNotification } = useSendEvaluationNotification();
+  // const { mutateAsync: sendNotification } = useSendEvaluationNotification();
 
   const canEditSelfEvaluation =
     user &&
     user?.role === UserRoles.EMPLOYEE &&
-    (isNewEvaluation || evaluation?.status === "draft");
+    (isNewEvaluation || evaluation?.status === EvaluationStatus.PENDING_STAFF);
   const canEditTeamLeadEvaluation =
-    user?.role === UserRoles.LEAD && evaluation?.status === "team_lead_review";
+    evaluation &&
+    user?.role === UserRoles.LEAD &&
+    evaluation?.status == EvaluationStatus.PENDING_LEAD_REVIEW;
   const canEditHREvaluation =
-    user?.role === UserRoles.HR && evaluation?.status === "hr_review";
+    user?.role === UserRoles.HR &&
+    evaluation?.status === EvaluationStatus.PENDING_HR_REVIEW;
   const canEditDirectorEvaluation =
     user?.role === UserRoles.DIRECTOR &&
-    evaluation?.status === "director_review";
+    evaluation?.status === EvaluationStatus.PENDING_DIRECTOR_REVIEW;
 
   const { showNotification } = useNotification();
 
@@ -110,7 +116,10 @@ const EvaluationForm: React.FC = () => {
       const savedEvaluation = await createEvaluation(data);
 
       // Send notifications based on status
-      if (isNewEvaluation || evaluation?.status === "draft") {
+      if (
+        isNewEvaluation ||
+        evaluation?.status === EvaluationStatus.PENDING_STAFF
+      ) {
         await sendNotification({
           evaluationId: savedEvaluation.id,
           type: "EVALUATION_SUBMITTED",

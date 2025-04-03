@@ -35,11 +35,3 @@ export const evaluationSchema = z.object({
 });
 
 export type EvaluationFormValues = z.infer<typeof evaluationSchema>;
-
-export type EvaluationStatus =
-  | "draft"
-  | "team_lead_review"
-  | "hr_review"
-  | "director_review"
-  | "submitted"
-  | "completed";

@@ -1,40 +1,43 @@
-import React from "react";
-import { Link } from "react-router-dom";
 import { ClipboardCheckIcon, ClockIcon } from "lucide-react";
+import { useEvaluation, useEvaluations } from "../../api/evaluations";
+
+import { Link } from "react-router-dom";
 import ProgressTracker from "../common/ProgressTracker";
-import { useEvaluations } from "../../api/evaluations";
+import React from "react";
 
-const currentEvaluation = {
-  id: "1",
-  quarter: "Q3 2023",
-  status: "team_lead_review",
-  dueDate: "2023-09-30",
-};
+// const currentEvaluation = {
+//   id: "1",
+//   quarter: "Q3 2023",
+//   status: "team_lead_review",
+//   dueDate: "2023-09-30",
+// };
 
-const previousEvaluations = [
-  {
-    id: "2",
-    quarter: "Q2 2023",
-    status: "completed",
-    finalGrade: "Exceeds Expectations",
-  },
-  {
-    id: "3",
-    quarter: "Q1 2023",
-    status: "completed",
-    finalGrade: "Meets Expectations",
-  },
-  {
-    id: "4",
-    quarter: "Q4 2022",
-    status: "completed",
-    finalGrade: "Meets Expectations",
-  },
-];
+// const previousEvaluations = [
+//   {
+//     id: "2",
+//     quarter: "Q2 2023",
+//     status: "completed",
+//     finalGrade: "Exceeds Expectations",
+//   },
+//   {
+//     id: "3",
+//     quarter: "Q1 2023",
+//     status: "completed",
+//     finalGrade: "Meets Expectations",
+//   },
+//   {
+//     id: "4",
+//     quarter: "Q4 2022",
+//     status: "completed",
+//     finalGrade: "Meets Expectations",
+//   },
+// ];
 
 const StaffDashboard: React.FC = () => {
-  const { data: evaluations } = useEvaluations();
-  console.log("🚀 ~ evaluations:", evaluations);
+  const { data: previousEvaluations } = useEvaluations();
+  const { data: currentEvaluation } = useEvaluation("current");
+  console.log("🚀 ~ evaluations:", previousEvaluations);
+  console.log("🚀 ~ currentEvaluation:", currentEvaluation);
 
   return (
     <div className="space-y-6">
@@ -53,7 +56,7 @@ const StaffDashboard: React.FC = () => {
                     Quarter
                   </div>
                   <div className="mt-1 text-lg font-semibold">
-                    {currentEvaluation.quarter}
+                    {currentEvaluation.period}
                   </div>
                 </div>
                 <div className="flex-1 min-w-[200px]">
@@ -61,7 +64,7 @@ const StaffDashboard: React.FC = () => {
                     Due Date
                   </div>
                   <div className="mt-1 text-lg font-semibold">
-                    {currentEvaluation.dueDate}
+                    {currentEvaluation.completedAt}
                   </div>
                 </div>
                 <div className="flex-1 min-w-[200px]">
@@ -114,7 +117,7 @@ const StaffDashboard: React.FC = () => {
           </h2>
         </div>
         <div className="divide-y divide-gray-200">
-          {evaluations && evaluations.length > 0 ? (
+          {previousEvaluations && previousEvaluations.length > 0 ? (
             previousEvaluations.map((evaluation) => (
               <div
                 key={evaluation.id}
@@ -122,10 +125,10 @@ const StaffDashboard: React.FC = () => {
               >
                 <div>
                   <div className="text-sm font-medium text-gray-900">
-                    {evaluation.quarter}
+                    {evaluation.period}
                   </div>
                   <div className="text-sm text-gray-500">
-                    Final Grade: {evaluation.finalGrade}
+                    Final Grade: {evaluation.directorReview?.finalGrade}
                   </div>
                 </div>
                 <Link

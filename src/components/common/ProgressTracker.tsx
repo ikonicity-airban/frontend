@@ -1,49 +1,44 @@
-import React from "react";
 import { CheckCircleIcon, Circle } from "lucide-react";
-type EvaluationStatus =
-  | "draft"
-  | "submitted"
-  | "team_lead_review"
-  | "hr_review"
-  | "director_review"
-  | "completed";
+
+import { EvaluationStatus } from "../../api/types";
+import React from "react";
+
 interface ProgressTrackerProps {
   currentStatus: EvaluationStatus;
 }
 const steps = [
   {
-    id: "submitted",
+    id: "SUBMITTED",
     name: "Self Evaluation",
     description: "Submitted by staff",
   },
   {
-    id: "team_lead_review",
+    id: "TEAM_LEAD_REVIEW",
     name: "Team Lead",
     description: "Performance review",
   },
   {
-    id: "hr_review",
+    id: "HR_REVIEW",
     name: "HR Review",
     description: "Compliance check",
   },
   {
-    id: "director_review",
+    id: "DIRECTOR_REVIEW",
     name: "Director Review",
     description: "Final decision",
   },
   {
-    id: "completed",
-    name: "Completed",
+    id: "COMPLETED",
+    name: "COMPLETED",
     description: "Process finished",
   },
 ];
 const statusOrder: Record<EvaluationStatus, number> = {
-  draft: -1,
-  submitted: 0,
-  team_lead_review: 1,
-  hr_review: 2,
-  director_review: 3,
-  completed: 4,
+  PENDING_DIRECTOR_REVIEW: 0,
+  PENDING_LEAD_REVIEW: 1,
+  PENDING_HR_REVIEW: 2,
+  PENDING_STAFF: 3,
+  COMPLETED: 4,
 };
 
 const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStatus }) => {
