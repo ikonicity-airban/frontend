@@ -40,10 +40,10 @@ const steps: {
 
 const statusOrder: Record<EvaluationStatus, number> = {
   PENDING_STAFF: 0,
-  SUBMITTED_BY_STAFF: 0,
-  REVIEWED_BY_HR: 1,
+  SUBMITTED_BY_STAFF: 1,
   REVIEWED_BY_LEAD: 2,
-  COMPLETED: 3,
+  PENDING_DIRECTOR_REVIEW: 3,
+  COMPLETED: 4,
 };
 
 const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStatus }) => {
