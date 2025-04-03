@@ -6,43 +6,45 @@ import React from "react";
 interface ProgressTrackerProps {
   currentStatus: EvaluationStatus;
 }
-const steps = [
+const steps: { id: EvaluationStatus | "DRAFT", name: string, description: string }[] = [
   {
-    id: "SUBMITTED",
-    name: "Self Evaluation",
-    description: "Submitted by staff",
+    id: EvaluationStatus.PENDING_STAFF,
+    name: "Summitted by Staff",
+    description: "Evaluation draft",
   },
   {
-    id: "TEAM_LEAD_REVIEW",
+    id: EvaluationStatus.SUBMITTED_BY_STAFF,
     name: "Team Lead",
     description: "Performance review",
   },
   {
-    id: "HR_REVIEW",
+    id: EvaluationStatus.REVIEWED_BY_LEAD,
     name: "HR Review",
     description: "Compliance check",
   },
   {
-    id: "DIRECTOR_REVIEW",
+    id: EvaluationStatus.PENDING_DIRECTOR_REVIEW,
     name: "Director Review",
     description: "Final decision",
   },
   {
-    id: "COMPLETED",
-    name: "COMPLETED",
+    id: EvaluationStatus.COMPLETED,
+    name: "Completed",
     description: "Process finished",
   },
 ];
+
 const statusOrder: Record<EvaluationStatus, number> = {
-  PENDING_DIRECTOR_REVIEW: 0,
-  PENDING_LEAD_REVIEW: 1,
-  PENDING_HR_REVIEW: 2,
-  PENDING_STAFF: 3,
-  COMPLETED: 4,
+  PENDING_STAFF: 0,
+  SUBMITTED_BY_STAFF: 0,
+  REVIEWED_BY_HR: 1,
+  REVIEWED_BY_LEAD: 2,
+  COMPLETED: 3,
 };
 
 const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStatus }) => {
   const currentStep = statusOrder[currentStatus];
+  console.log("🚀 ~ currentStep:", currentStep)
   return (
     <div className="py-6">
       <nav aria-label="Progress">
@@ -58,15 +60,13 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStatus }) => {
             return (
               <li
                 key={step.name}
-                className={`relative ${
-                  stepIdx !== steps.length - 1 ? "pb-8" : ""
-                }`}
+                className={`relative ${stepIdx !== steps.length - 1 ? "pb-8" : ""
+                  }`}
               >
                 {stepIdx !== steps.length - 1 ? (
                   <div
-                    className={`absolute left-4 top-4 -ml-px mt-0.5 h-full w-0.5 ${
-                      status === "complete" ? "bg-indigo-600" : "bg-gray-300"
-                    }`}
+                    className={`absolute left-4 top-4 -ml-px mt-0.5 h-full w-0.5 ${status === "complete" ? "bg-indigo-600" : "bg-gray-300"
+                      }`}
                     aria-hidden="true"
                   />
                 ) : null}
@@ -97,13 +97,12 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStatus }) => {
                   </span>
                   <div className="ml-4 min-w-0 flex flex-col">
                     <span
-                      className={`text-sm font-medium ${
-                        status === "complete"
-                          ? "text-indigo-600"
-                          : status === "current"
+                      className={`text-sm font-medium ${status === "complete"
+                        ? "text-indigo-600"
+                        : status === "current"
                           ? "text-indigo-600"
                           : "text-gray-500"
-                      }`}
+                        }`}
                     >
                       {step.name}
                     </span>
