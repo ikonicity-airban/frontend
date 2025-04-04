@@ -6,7 +6,11 @@ import React from "react";
 interface ProgressTrackerProps {
   currentStatus: EvaluationStatus;
 }
-const steps: { id: EvaluationStatus | "DRAFT", name: string, description: string }[] = [
+const steps: {
+  id: EvaluationStatus | "DRAFT";
+  name: string;
+  description: string;
+}[] = [
   {
     id: EvaluationStatus.PENDING_STAFF,
     name: "Summitted by Staff",
@@ -44,7 +48,7 @@ const statusOrder: Record<EvaluationStatus, number> = {
 
 const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStatus }) => {
   const currentStep = statusOrder[currentStatus];
-  console.log("🚀 ~ currentStep:", currentStep)
+  console.log("🚀 ~ currentStep:", currentStep);
   return (
     <div className="py-6">
       <nav aria-label="Progress">
@@ -60,13 +64,15 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStatus }) => {
             return (
               <li
                 key={step.name}
-                className={`relative ${stepIdx !== steps.length - 1 ? "pb-8" : ""
-                  }`}
+                className={`relative ${
+                  stepIdx !== steps.length - 1 ? "pb-8" : ""
+                }`}
               >
                 {stepIdx !== steps.length - 1 ? (
                   <div
-                    className={`absolute left-4 top-4 -ml-px mt-0.5 h-full w-0.5 ${status === "complete" ? "bg-indigo-600" : "bg-gray-300"
-                      }`}
+                    className={`absolute left-4 top-4 -ml-px mt-0.5 h-full w-0.5 ${
+                      status === "complete" ? "bg-indigo-600" : "bg-gray-300"
+                    }`}
                     aria-hidden="true"
                   />
                 ) : null}
@@ -97,12 +103,13 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStatus }) => {
                   </span>
                   <div className="ml-4 min-w-0 flex flex-col">
                     <span
-                      className={`text-sm font-medium ${status === "complete"
-                        ? "text-indigo-600"
-                        : status === "current"
+                      className={`text-sm font-medium ${
+                        status === "complete"
+                          ? "text-indigo-600"
+                          : status === "current"
                           ? "text-indigo-600"
                           : "text-gray-500"
-                        }`}
+                      }`}
                     >
                       {step.name}
                     </span>
