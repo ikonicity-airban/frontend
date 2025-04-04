@@ -158,13 +158,12 @@ const AdminDashboard: React.FC = () => {
         <div className="p-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div
-              className={`p-4 rounded-lg ${
-                healthLoading
+              className={`p-4 rounded-lg ${healthLoading
                   ? "bg-gray-50"
                   : healthData?.status === "healthy"
-                  ? "bg-green-50"
-                  : "bg-yellow-50"
-              }`}
+                    ? "bg-green-50"
+                    : "bg-yellow-50"
+                }`}
             >
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -178,37 +177,35 @@ const AdminDashboard: React.FC = () => {
                 </div>
                 <div className="ml-3">
                   <h3
-                    className={`text-sm font-medium ${
-                      healthLoading
+                    className={`text-sm font-medium ${healthLoading
                         ? "text-gray-800"
                         : healthData?.status === "healthy"
-                        ? "text-green-800"
-                        : "text-yellow-800"
-                    }`}
+                          ? "text-green-800"
+                          : "text-yellow-800"
+                      }`}
                   >
                     {healthLoading
                       ? "Checking system status..."
                       : healthData?.status === "healthy"
-                      ? "All systems operational"
-                      : "System needs attention"}
+                        ? "All systems operational"
+                        : "System needs attention"}
                   </h3>
                   <div
-                    className={`mt-2 text-sm ${
-                      healthLoading
+                    className={`mt-2 text-sm ${healthLoading
                         ? "text-gray-700"
                         : healthData?.status === "healthy"
-                        ? "text-green-700"
-                        : "text-yellow-700"
-                    }`}
+                          ? "text-green-700"
+                          : "text-yellow-700"
+                      }`}
                   >
                     <p>
                       {healthLoading
                         ? "Please wait..."
                         : healthData?.status === "healthy"
-                        ? `The evaluation system is running normally with uptime of ${Math.floor(
+                          ? `The evaluation system is running normally with uptime of ${Math.floor(
                             healthData.uptime / 3600
                           )} hours.`
-                        : "There may be some issues with the system. Check the logs for more details."}
+                          : "There may be some issues with the system. Check the logs for more details."}
                     </p>
                   </div>
                 </div>
@@ -254,7 +251,7 @@ const AdminDashboard: React.FC = () => {
         </div>
         <div className="p-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <Link
-            to="/admin/users"
+            to="/users"
             className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
           >
             <div>
@@ -272,7 +269,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </Link>
           <Link
-            to="/admin/timeline"
+            to="/timeline"
             className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
           >
             <div>
@@ -290,7 +287,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </Link>
           <Link
-            to="/admin/settings"
+            to="/settings"
             className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
           >
             <div>
@@ -308,7 +305,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </Link>
           <Link
-            to="/admin/forms"
+            to="/forms"
             className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
           >
             <div>
@@ -326,7 +323,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </Link>
           <Link
-            to="/admin/export"
+            to="/export"
             className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
           >
             <div>
@@ -344,7 +341,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </Link>
           <Link
-            to="/admin/system"
+            to="/system"
             className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
           >
             <div>
@@ -388,7 +385,7 @@ const AdminDashboard: React.FC = () => {
         </div>
         <div className="px-6 py-4 border-t border-gray-200">
           <Link
-            to="/admin/activity"
+            to="/activity"
             className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
           >
             View all activity
