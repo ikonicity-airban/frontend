@@ -104,7 +104,7 @@ export const usersApi = {
 
 // React Query hooks for users
 export const useUsers = () =>
-  useQuery({
+  useQuery<User[]>({
     queryKey: ["users"],
     queryFn: usersApi.getAll,
   });

@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "../axios";
+import { APIRoutes } from "../routes";
+import { AxiosError } from "axios";
 
 // Type definitions
 interface User {
@@ -50,6 +52,11 @@ interface EvaluationSettings {
   directorDecisionDeadline: string;
 }
 
+interface SendRemindersDto {
+  period?: string;
+  type?: "ALL" | "STAFF" | "LEAD" | "HR" | "DIRECTOR";
+}
+
 // API functions with return types
 export const adminApi = {
   getAllUsers: (): Promise<User[]> =>
@@ -80,7 +87,7 @@ export const adminApi = {
   getEvaluationStats: (): Promise<EvaluationStats> =>
     apiRequest<EvaluationStats>({
       method: "GET",
-      url: "/admin/evaluations/stats",
+      url: APIRoutes.AdminEvaluationsStats,
     }),
 
   setEvaluationDeadlines: (data: DeadlinesDto): Promise<DeadlinesDto> =>
@@ -108,11 +115,11 @@ export const adminApi = {
       url: "/admin/monitor/progress",
     }),
 
-  sendReminderEmails: (period?: string): Promise<{ sent: number }> =>
+  sendReminderEmails: (data: SendRemindersDto): Promise<{ sent: number }> =>
     apiRequest<{ sent: number }>({
       method: "POST",
       url: "/admin/notifications/send-reminders",
-      params: period ? { period } : undefined,
+      data,
     }),
 
   // Evaluation Settings
@@ -232,7 +239,7 @@ export const useGetEvaluationProgress = () =>
 
 export const useSendReminderEmails = () => {
   const queryClient = useQueryClient();
-  return useMutation<{ sent: number }, Error, string | undefined, unknown>({
+  return useMutation<{ sent: number }, AxiosError, SendRemindersDto, unknown>({
     mutationFn: adminApi.sendReminderEmails,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evaluation-progress"] });

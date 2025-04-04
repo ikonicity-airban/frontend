@@ -16,6 +16,8 @@ import AppLayout from "./components/layout/AppLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import queryClient from "./api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import UserList from "./components/users/UserList";
+import UserPage from "./pages/UserPage";
 
 export function App() {
   return (
@@ -33,6 +35,8 @@ export function App() {
                   <Route path="/team" element={<TeamPage />} />
                   <Route path="/reports" element={<ReportsPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/users" element={<UserList />} />
+                  <Route path="/users/:id" element={<UserPage />} />
                 </Route>
               </Route>
             </Routes>

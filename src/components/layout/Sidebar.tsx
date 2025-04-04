@@ -6,6 +6,7 @@ import {
   UsersIcon,
   SettingsIcon,
   BarChartIcon,
+  UserCogIcon,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { UserRoles } from "../../lib/roles";
@@ -62,6 +63,12 @@ const Sidebar: React.FC = () => {
       roles: [UserRoles.HR, UserRoles.DIRECTOR, UserRoles.ADMIN],
     },
     {
+      name: "User Management",
+      path: "/users",
+      icon: <UserCogIcon size={20} />,
+      roles: [UserRoles.ADMIN],
+    },
+    {
       name: "Settings",
       path: "/settings",
       icon: <SettingsIcon size={20} />,
@@ -87,10 +94,9 @@ const Sidebar: React.FC = () => {
                 to={item.path}
                 className={`
                   flex items-center px-4 py-3 text-sm font-medium rounded-md 
-                  ${
-                    isActive
-                      ? "bg-indigo-900 text-white"
-                      : "text-indigo-100 hover:bg-indigo-700"
+                  ${isActive
+                    ? "bg-indigo-900 text-white"
+                    : "text-indigo-100 hover:bg-indigo-700"
                   }
                 `}
               >

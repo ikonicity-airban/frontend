@@ -31,6 +31,10 @@ export interface User {
   role: UserRoles;
   position: string;
   department: string;
+  phone: string;
+  address: string;
+  hireDate: string;
+  employeeId: string;
   teamId?: string;
   teamLead?: User;
   isActive: boolean;

@@ -13,11 +13,9 @@ import {
 } from "lucide-react";
 import {
   useAdminStats,
-  useSystemHealth,
-  useEvaluationStats,
-  useGetCurrentEvaluationSettings,
+  useSystemHealth, useGetCurrentEvaluationSettings,
   useSendReminderEmails,
-  useGetEvaluationProgress,
+  useGetEvaluationProgress
 } from "../../api/admin";
 import { useNotification } from "../../context/NotificationContext";
 import { format } from 'date-fns';
@@ -25,11 +23,10 @@ import { format } from 'date-fns';
 const AdminDashboard: React.FC = () => {
   const { data: adminStats, isLoading: statsLoading } = useAdminStats();
   const { data: healthData, isLoading: healthLoading } = useSystemHealth();
-  const { data: evaluationStats, isLoading: evalStatsLoading } =
-    useEvaluationStats();
+
   const { showNotification } = useNotification();
   const { data: currentSettings } = useGetCurrentEvaluationSettings();
-  const { mutate: sendReminders } = useSendReminderEmails();
+  const { mutate: sendReminders, isPending: isSendingReminders } = useSendReminderEmails();
   const { data: progress } = useGetEvaluationProgress();
 
   // Current quarter calculation (could be fetched from settings in a real app)
@@ -77,7 +74,10 @@ const AdminDashboard: React.FC = () => {
 
   // Handler for sending reminders
   const handleSendReminders = () => {
-    sendReminders(undefined, {
+    sendReminders({
+      period: currentSettings?.periodName,
+      type: 'STAFF'
+    }, {
       onSuccess: () => {
         showNotification(
           "success",
@@ -145,8 +145,9 @@ const AdminDashboard: React.FC = () => {
             </div>
             <div className="sm:col-span-2">
               <button
+                disabled={isSendingReminders}
                 onClick={handleSendReminders}
-                className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="mt-4 inline-flex disabled:cursor-not-allowed disabled:opacity-0.5 items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Send Reminders to Pending Staff
               </button>
@@ -196,10 +197,10 @@ const AdminDashboard: React.FC = () => {
                     Active Evaluations
                   </dt>
                   <dd className="text-xl font-semibold text-gray-900">
-                    {evalStatsLoading ? (
+                    {statsLoading ? (
                       <span className="animate-pulse">...</span>
                     ) : (
-                      evaluationStats?.pending || 0
+                      adminStats?.activeEvaluations || 0
                     )}
                   </dd>
                 </dl>
@@ -219,10 +220,10 @@ const AdminDashboard: React.FC = () => {
                     Completed
                   </dt>
                   <dd className="text-xl font-semibold text-gray-900">
-                    {evalStatsLoading ? (
+                    {statsLoading ? (
                       <span className="animate-pulse">...</span>
                     ) : (
-                      evaluationStats?.completed || 0
+                      adminStats?.completedEvaluations || 0
                     )}
                   </dd>
                 </dl>
