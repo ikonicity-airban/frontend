@@ -13,7 +13,7 @@ const steps: {
 }[] = [
   {
     id: EvaluationStatus.PENDING_STAFF,
-    name: "Summitted by Staff",
+    name: "Submitted by Staff",
     description: "Evaluation draft",
   },
   {
@@ -42,11 +42,13 @@ const statusOrder: Record<EvaluationStatus, number> = {
   PENDING_STAFF: 0,
   SUBMITTED_BY_STAFF: 1,
   REVIEWED_BY_LEAD: 2,
-  PENDING_DIRECTOR_REVIEW: 3,
-  COMPLETED: 4,
+  REVIEWED_BY_HR: 3,
+  PENDING_DIRECTOR_REVIEW: 4,
+  COMPLETED: 5,
 };
 
 const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStatus }) => {
+  console.log("🚀 ~ currentStatus:", currentStatus);
   const currentStep = statusOrder[currentStatus];
   console.log("🚀 ~ currentStep:", currentStep);
   return (

@@ -25,3 +25,10 @@ export const useCreateEvaluation = () => {
       (await api.post("/evaluations", data)).data,
   });
 };
+
+export const useSelfEvaluation = () => {
+  return useMutation({
+    mutationFn: async (data: Partial<Evaluation>) =>
+      (await api.post("/evaluations/self/", data)).data,
+  });
+};

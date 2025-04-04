@@ -1,5 +1,6 @@
 // src/types/index.ts
 
+import { LetterGrade } from "../../types/evaluation";
 import { UserRoles } from "../../lib/roles";
 
 // Enum types (matching backend)
@@ -16,6 +17,7 @@ export enum EvaluationStatus {
   PENDING_STAFF = "PENDING_STAFF",
   SUBMITTED_BY_STAFF = "SUBMITTED_BY_STAFF",
   REVIEWED_BY_LEAD = "REVIEWED_BY_LEAD",
+  REVIEWED_BY_HR = "REVIEWED_BY_HR",
   PENDING_DIRECTOR_REVIEW = "PENDING_DIRECTOR_REVIEW",
   COMPLETED = "COMPLETED",
 }
@@ -27,6 +29,8 @@ export interface User {
   username: string;
   name: string;
   role: UserRoles;
+  position: string;
+  department: string;
   teamId?: string;
   teamLead?: User;
   isActive: boolean;
@@ -74,10 +78,10 @@ export interface SelfEvaluationDto {
   achievements: string;
   challenges: string;
   goals: string;
-  skillsGrade: string;
-  communicationGrade: string;
-  initiativeGrade: string;
-  overallSelfGrade: string;
+  skillsGrade: LetterGrade;
+  communicationGrade: LetterGrade;
+  initiativeGrade: LetterGrade;
+  overallSelfGrade: LetterGrade;
 }
 
 export interface LeadReviewDto {

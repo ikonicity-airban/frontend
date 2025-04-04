@@ -8,7 +8,7 @@ export const evaluationSchema = z.object({
     achievements: z.string(),
     challenges: z.string(),
     goals: z.string(),
-    skillsGrade: z.enum(letterGrade),
+    skillsGrade: z.enum(letterGrade).nullable(),
     communicationGrade: z.enum(letterGrade),
     initiativeGrade: z.enum(letterGrade),
     overallSelfGrade: z.enum(letterGrade),
