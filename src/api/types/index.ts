@@ -26,7 +26,6 @@ export enum EvaluationStatus {
 export interface User {
   id: string;
   email: string;
-  username: string;
   name: string;
   role: UserRoles;
   position: string;
