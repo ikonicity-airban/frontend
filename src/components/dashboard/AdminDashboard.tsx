@@ -15,8 +15,12 @@ import {
   useAdminStats,
   useSystemHealth,
   useEvaluationStats,
+  useGetCurrentEvaluationSettings,
+  useSendReminderEmails,
+  useGetEvaluationProgress,
 } from "../../api/admin";
 import { useNotification } from "../../context/NotificationContext";
+import { format } from 'date-fns';
 
 const AdminDashboard: React.FC = () => {
   const { data: adminStats, isLoading: statsLoading } = useAdminStats();
@@ -24,12 +28,15 @@ const AdminDashboard: React.FC = () => {
   const { data: evaluationStats, isLoading: evalStatsLoading } =
     useEvaluationStats();
   const { showNotification } = useNotification();
+  const { data: currentSettings } = useGetCurrentEvaluationSettings();
+  const { mutate: sendReminders } = useSendReminderEmails();
+  const { data: progress } = useGetEvaluationProgress();
 
   // Current quarter calculation (could be fetched from settings in a real app)
   const getCurrentQuarter = () => {
     const now = new Date();
     const quarter = Math.floor(now.getMonth() / 3) + 1;
-    return `Q${quarter} ${now.getFullYear()}`;
+    return `Q${quarter} ${format(now, 'yyyy')}`;
   };
 
   // Mock data for recent activities (would come from an API in a real implementation)
@@ -68,6 +75,88 @@ const AdminDashboard: React.FC = () => {
     );
   };
 
+  // Handler for sending reminders
+  const handleSendReminders = () => {
+    sendReminders(undefined, {
+      onSuccess: () => {
+        showNotification(
+          "success",
+          "Reminder emails have been sent successfully"
+        );
+      },
+      onError: (error) => {
+        showNotification(
+          "error",
+          "Failed to send reminder emails: " + error.message
+        );
+      },
+    });
+  };
+
+  // Add evaluation period info section
+  const renderEvaluationPeriodInfo = () => {
+    if (!currentSettings) return null;
+
+    return (
+      <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="px-6 py-5 border-b border-gray-200">
+          <h2 className="text-lg font-medium text-gray-900">
+            Current Evaluation Period
+          </h2>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Period</h3>
+              <p className="mt-1 text-lg text-gray-900">
+                {currentSettings.periodName}
+              </p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Progress</h3>
+              <p className="mt-1 text-lg text-gray-900">
+                {progress ? (
+                  <>
+                    {progress.completed} / {progress.totalStaff} Completed
+                    ({Math.round((progress.completed / progress.totalStaff) * 100)}
+                    %)
+                  </>
+                ) : (
+                  "Loading..."
+                )}
+              </p>
+            </div>
+            <div className="sm:col-span-2">
+              <h3 className="text-sm font-medium text-gray-500">Deadlines</h3>
+              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div>
+                  <p className="text-sm text-gray-500">Self Evaluation</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {format(new Date(currentSettings.selfEvaluationDeadline), 'PP')}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Lead Review</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {format(new Date(currentSettings.leadReviewDeadline), 'PP')}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="sm:col-span-2">
+              <button
+                onClick={handleSendReminders}
+                className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Send Reminders to Pending Staff
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
@@ -84,7 +173,11 @@ const AdminDashboard: React.FC = () => {
                     Total Users
                   </dt>
                   <dd className="text-xl font-semibold text-gray-900">
-                    {statsLoading ? "..." : adminStats?.usersCount || 0}
+                    {statsLoading ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      adminStats?.usersCount || 0
+                    )}
                   </dd>
                 </dl>
               </div>
@@ -103,7 +196,11 @@ const AdminDashboard: React.FC = () => {
                     Active Evaluations
                   </dt>
                   <dd className="text-xl font-semibold text-gray-900">
-                    {evalStatsLoading ? "..." : evaluationStats?.pending || 0}
+                    {evalStatsLoading ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      evaluationStats?.pending || 0
+                    )}
                   </dd>
                 </dl>
               </div>
@@ -122,7 +219,11 @@ const AdminDashboard: React.FC = () => {
                     Completed
                   </dt>
                   <dd className="text-xl font-semibold text-gray-900">
-                    {evalStatsLoading ? "..." : evaluationStats?.completed || 0}
+                    {evalStatsLoading ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      evaluationStats?.completed || 0
+                    )}
                   </dd>
                 </dl>
               </div>
@@ -141,7 +242,11 @@ const AdminDashboard: React.FC = () => {
                     Current Quarter
                   </dt>
                   <dd className="text-xl font-semibold text-gray-900">
-                    {getCurrentQuarter()}
+                    {currentSettings ? (
+                      `Q${currentSettings.quarter} ${currentSettings.year}`
+                    ) : (
+                      getCurrentQuarter()
+                    )}
                   </dd>
                 </dl>
               </div>
@@ -149,6 +254,9 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Evaluation Period Info after Summary Cards */}
+      {renderEvaluationPeriodInfo()}
 
       {/* System Status */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
@@ -159,10 +267,10 @@ const AdminDashboard: React.FC = () => {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div
               className={`p-4 rounded-lg ${healthLoading
-                  ? "bg-gray-50"
-                  : healthData?.status === "healthy"
-                    ? "bg-green-50"
-                    : "bg-yellow-50"
+                ? "bg-gray-50"
+                : healthData?.status === "healthy"
+                  ? "bg-green-50"
+                  : "bg-yellow-50"
                 }`}
             >
               <div className="flex">
@@ -178,10 +286,10 @@ const AdminDashboard: React.FC = () => {
                 <div className="ml-3">
                   <h3
                     className={`text-sm font-medium ${healthLoading
-                        ? "text-gray-800"
-                        : healthData?.status === "healthy"
-                          ? "text-green-800"
-                          : "text-yellow-800"
+                      ? "text-gray-800"
+                      : healthData?.status === "healthy"
+                        ? "text-green-800"
+                        : "text-yellow-800"
                       }`}
                   >
                     {healthLoading
@@ -192,10 +300,10 @@ const AdminDashboard: React.FC = () => {
                   </h3>
                   <div
                     className={`mt-2 text-sm ${healthLoading
-                        ? "text-gray-700"
-                        : healthData?.status === "healthy"
-                          ? "text-green-700"
-                          : "text-yellow-700"
+                      ? "text-gray-700"
+                      : healthData?.status === "healthy"
+                        ? "text-green-700"
+                        : "text-yellow-700"
                       }`}
                   >
                     <p>
