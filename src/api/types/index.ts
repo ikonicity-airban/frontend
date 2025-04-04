@@ -101,7 +101,7 @@ export interface HrReviewDto {
 
 export interface DirectorReviewDto {
   strategicAlignmentRating: number;
-  finalGrade: string;
+  finalGrade: LetterGrade;
   comments: string;
 }
 

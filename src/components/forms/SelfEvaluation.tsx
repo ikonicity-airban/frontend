@@ -37,7 +37,9 @@ export const SelfEvaluation: React.FC<SelfEvaluationProps> = ({
                 disabled={!canEdit}
                 placeholder={"Describe your " + field}
                 className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-500 rounded-md p-4"
-                {...register(`selfEvaluation.${field}`)}
+                {...register(`selfEvaluation.${field}`, {
+                  disabled: !canEdit,
+                })}
               />
               {errors.selfEvaluation?.[field] && (
                 <p className="text-red-500 text-sm mt-1">
@@ -69,7 +71,9 @@ export const SelfEvaluation: React.FC<SelfEvaluationProps> = ({
                 id={field}
                 disabled={!canEdit}
                 className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                {...register(`selfEvaluation.${field}`)}
+                {...register(`selfEvaluation.${field}`, {
+                  disabled: !canEdit,
+                })}
               >
                 <option value="">Select Grade</option>
                 {gradeOptions.map((grade) => (

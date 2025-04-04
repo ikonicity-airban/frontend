@@ -1,8 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { APIRoutes } from "../routes";
-import type { Evaluation } from "../types";
+import type { Evaluation, SelfEvaluationDto } from "../types";
 import api from "../axios";
+import {
+  HREvaluationValues,
+  TeamLeadEvaluationValues,
+} from "../../types/evaluation";
 
 export const useEvaluations = () => {
   return useQuery<Evaluation[]>({
@@ -28,7 +32,28 @@ export const useCreateEvaluation = () => {
 
 export const useSelfEvaluation = () => {
   return useMutation({
-    mutationFn: async (data: Partial<Evaluation>) =>
+    mutationFn: async (data: Partial<SelfEvaluationDto>) =>
       (await api.post("/evaluations/self/", data)).data,
+  });
+};
+
+export const useLeadEvaluation = () => {
+  return useMutation({
+    mutationFn: async (data: Partial<TeamLeadEvaluationValues>) =>
+      (await api.post("/evaluations/lead/", data)).data,
+  });
+};
+
+export const useHREvaluation = () => {
+  return useMutation({
+    mutationFn: async (data: Partial<HREvaluationValues>) =>
+      (await api.post("/evaluations/hr/", data)).data,
+  });
+};
+
+export const useDirectorEvaluation = () => {
+  return useMutation({
+    mutationFn: async (data: Partial<Evaluation>) =>
+      (await api.post("/evaluations/director/", data)).data,
   });
 };
