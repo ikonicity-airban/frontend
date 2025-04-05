@@ -67,10 +67,41 @@ const EvaluationForm: React.FC = () => {
   // Handle form submission
   const onSubmit = async (data: EvaluationFormValues) => {
     try {
+      // Combine form data with any additional needed information
+      const combinedData = {
+        ...data,
+        userId: user?.id,
+        status: isNewEvaluation ? EvaluationStatus.PENDING_STAFF : evaluation?.status,
+      };
+      
       await selfEvaluation.mutateAsync(combinedData);
-      // ...rest of submission logic...
+      setSuccessMessage("Evaluation submitted successfully");
+      showNotification("success", "Evaluation submitted successfully");
+      navigate("/dashboard");
     } catch (error) {
-      // ...error handling...
+      let errorMessage = "Failed to submit evaluation. Please try again.";
+      
+      if (error instanceof Error) {
+        // Handle Axios errors with improved error extraction
+        const axiosError = error as any;
+        if (axiosError.response?.data) {
+          const data = axiosError.response.data;
+          if (typeof data === 'object' && data !== null) {
+            if (typeof data.message === 'object' && data.message !== null && 'message' in data.message) {
+              errorMessage = data.message.message;
+            } else if (data.message) {
+              errorMessage = data.message;
+            } else if (data.error) {
+              errorMessage = data.error;
+            }
+          }
+        } else if (axiosError.message) {
+          errorMessage = axiosError.message;
+        }
+      }
+      
+      setErrorMessage(errorMessage);
+      showNotification("error", errorMessage);
     }
   };
 
