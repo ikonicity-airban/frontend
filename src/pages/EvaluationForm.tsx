@@ -1,8 +1,8 @@
 import { CheckCircleIcon, SaveIcon, XCircleIcon } from "lucide-react";
 import {
-  EvaluationFormValues,
   LetterGrade,
-  evaluationSchema,
+  SelfEvaluationValues,
+  selfEvaluationSchema,
 } from "../types/evaluation";
 import { useEvaluation, useSelfEvaluation } from "../api/evaluations";
 import { useNavigate, useParams } from "react-router-dom";
@@ -59,18 +59,27 @@ const EvaluationForm: React.FC = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-  } = useForm<EvaluationFormValues>({
-    resolver: zodResolver(evaluationSchema),
-    defaultValues: evaluation || undefined,
+  } = useForm<SelfEvaluationValues>({
+    resolver: zodResolver(selfEvaluationSchema),
+    defaultValues: evaluation?.selfEvaluation,
   });
 
   // Handle form submission
-  const onSubmit = async (data: EvaluationFormValues) => {
+  const onSubmit = async (data: SelfEvaluationValues) => {
     try {
-      await selfEvaluation.mutateAsync(combinedData);
+      await selfEvaluation.mutateAsync(data);
       // ...rest of submission logic...
+      showNotification("success", "Self-evaluation saved successfully!");
+      setSuccessMessage("Self-evaluation saved successfully!");
+      setErrorMessage("");
+      if (evaluation?.status === EvaluationStatus.PENDING_STAFF) {
+        navigate(`/evaluation/${evaluation.id}`);
+      }
     } catch (error) {
       // ...error handling...
+      showNotification("error", "Failed to save self-evaluation.");
+      setErrorMessage("Failed to save self-evaluation.");
+      setSuccessMessage("");
     }
   };
 
@@ -137,7 +146,7 @@ const EvaluationForm: React.FC = () => {
                   value={user?.name}
                   readOnly
                   disabled
-                  className="shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-50"
+                  className="shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 border-[1px] rounded-md bg-gray-50"
                 />
               </div>
             </div>
@@ -156,7 +165,7 @@ const EvaluationForm: React.FC = () => {
                   value={user?.role || "-"}
                   readOnly
                   disabled
-                  className="shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-50"
+                  className="shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 border-[1px] rounded-md bg-gray-50"
                 />
               </div>
             </div>
@@ -175,7 +184,7 @@ const EvaluationForm: React.FC = () => {
                   value={user?.department}
                   readOnly
                   disabled
-                  className="shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-50"
+                  className="shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 border-[1px] rounded-md bg-gray-50"
                 />
               </div>
             </div>
@@ -194,7 +203,7 @@ const EvaluationForm: React.FC = () => {
                   value={evaluation?.period}
                   readOnly
                   disabled
-                  className="shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-50"
+                  className="shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 border-[1px] rounded-md bg-gray-50"
                 />
               </div>
             </div>
@@ -217,7 +226,7 @@ const EvaluationForm: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
-              className="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="py-2 px-4 border border-gray-300 border-[1px] rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Cancel
             </button>
@@ -239,14 +248,16 @@ const EvaluationForm: React.FC = () => {
         <TeamLeadEvaluation
           defaultValues={evaluation?.leadReview}
           canEdit={!!canEditTeamLeadEvaluation}
-          onSubmit={(data) => setValue("teamLeadEvaluation", data)}
+          setErrorMessage={setErrorMessage}
+          setSuccessMessage={setSuccessMessage}
         />
       )}
       {(user?.role === UserRoles.HR || user?.role === UserRoles.DIRECTOR) && (
         <HREvaluation
           defaultValues={evaluation?.hrReview}
           canEdit={canEditHREvaluation}
-          onSubmit={(data) => setValue("hrEvaluation", data)}
+          setErrorMessage={setErrorMessage}
+          setSuccessMessage={setSuccessMessage}
         />
       )}
       {user?.role === UserRoles.DIRECTOR && (
@@ -254,7 +265,8 @@ const EvaluationForm: React.FC = () => {
           defaultValues={evaluation?.directorReview}
           canEdit={canEditDirectorEvaluation}
           gradeOptions={GRADE_OPTIONS}
-          onSubmit={(data) => setValue("directorEvaluation", data)}
+          setErrorMessage={setErrorMessage}
+          setSuccessMessage={setSuccessMessage}
         />
       )}
     </div>

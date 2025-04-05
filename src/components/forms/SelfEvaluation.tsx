@@ -1,9 +1,13 @@
 import React from "react";
 import { UseFormRegister, FieldErrors } from "react-hook-form";
-import { EvaluationFormValues, LetterGrade } from "../../types/evaluation";
+import {
+  EvaluationFormValues,
+  LetterGrade,
+  SelfEvaluationValues,
+} from "../../types/evaluation";
 
 interface SelfEvaluationProps {
-  register: UseFormRegister<EvaluationFormValues>;
+  register: UseFormRegister<SelfEvaluationValues>;
   errors: FieldErrors<EvaluationFormValues>;
   canEdit: boolean;
   gradeOptions: LetterGrade[];
@@ -36,8 +40,8 @@ export const SelfEvaluation: React.FC<SelfEvaluationProps> = ({
                 rows={4}
                 disabled={!canEdit}
                 placeholder={"Describe your " + field}
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-500 rounded-md p-4"
-                {...register(`selfEvaluation.${field}`, {
+                className="shadow-sm focus:ring-indigo-500 border-[1px] focus:border-indigo-500 block w-full sm:text-sm border-gray-200 rounded-md p-4"
+                {...register(field, {
                   disabled: !canEdit,
                 })}
               />
@@ -70,8 +74,8 @@ export const SelfEvaluation: React.FC<SelfEvaluationProps> = ({
               <select
                 id={field}
                 disabled={!canEdit}
-                className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                {...register(`selfEvaluation.${field}`, {
+                className="mt-1 block w-full py-2 px-3 border border-gray-200 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                {...register(field, {
                   disabled: !canEdit,
                 })}
               >

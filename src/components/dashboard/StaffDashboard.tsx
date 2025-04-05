@@ -1,46 +1,26 @@
 import { ClipboardCheckIcon, ClockIcon } from "lucide-react";
 import { useEvaluation, useEvaluations } from "../../api/evaluations";
+import { useEvaluationSettings } from "../../hooks/useEvaluationSettings";
 
 import { Link } from "react-router-dom";
 import ProgressTracker from "../common/ProgressTracker";
 import React from "react";
 
-// const currentEvaluation = {
-//   id: "1",
-//   quarter: "Q3 2023",
-//   status: "team_lead_review",
-//   dueDate: "2023-09-30",
-// };
-
-// const previousEvaluations = [
-//   {
-//     id: "2",
-//     quarter: "Q2 2023",
-//     status: "completed",
-//     finalGrade: "Exceeds Expectations",
-//   },
-//   {
-//     id: "3",
-//     quarter: "Q1 2023",
-//     status: "completed",
-//     finalGrade: "Meets Expectations",
-//   },
-//   {
-//     id: "4",
-//     quarter: "Q4 2022",
-//     status: "completed",
-//     finalGrade: "Meets Expectations",
-//   },
-// ];
-
 const StaffDashboard: React.FC = () => {
   const { data: previousEvaluations } = useEvaluations();
   const { data: currentEvaluation } = useEvaluation("current");
-  console.log("🚀 ~ evaluations:", previousEvaluations);
-  console.log("🚀 ~ currentEvaluation:", currentEvaluation);
+  const { currentSetting, isDeadlinePassed, getDeadlineForRole } =
+    useEvaluationSettings();
+
+  // Get the staff deadline
+  const staffDeadline = getDeadlineForRole("STAFF");
+  const isStaffDeadlinePassed = isDeadlinePassed("STAFF");
 
   return (
     <div className="space-y-6">
+      {/* Evaluation Period Info Card */}
+      {/* <CurrentPeriodInfo className="bg-white shadow" /> */}
+
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="px-6 py-5 border-b border-gray-200">
           <h2 className="text-lg font-medium text-gray-900">
@@ -64,7 +44,14 @@ const StaffDashboard: React.FC = () => {
                     Due Date
                   </div>
                   <div className="mt-1 text-lg font-semibold">
-                    {currentEvaluation.completedAt}
+                    {staffDeadline
+                      ? new Date(staffDeadline).toLocaleDateString()
+                      : currentEvaluation.completedAt}
+                    {isStaffDeadlinePassed && (
+                      <span className="ml-2 text-sm text-red-600">
+                        (Deadline passed)
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex-1 min-w-[200px]">
@@ -96,7 +83,9 @@ const StaffDashboard: React.FC = () => {
                 No active evaluation
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                You don't have any active evaluation for this quarter.
+                {currentSetting
+                  ? `The current evaluation period is ${currentSetting.periodName}. Please start your self-evaluation.`
+                  : "You don't have any active evaluation for this quarter."}
               </p>
               <div className="mt-6">
                 <Link
@@ -167,6 +156,18 @@ const StaffDashboard: React.FC = () => {
               <p className="mt-2 text-sm text-gray-500">
                 Begin your quarterly self-assessment and performance review
               </p>
+              {staffDeadline && (
+                <p
+                  className={`mt-1 text-sm ${
+                    isStaffDeadlinePassed
+                      ? "text-red-500 font-bold"
+                      : "text-green-500"
+                  }`}
+                >
+                  Due by: {new Date(staffDeadline).toLocaleDateString()}
+                  {isStaffDeadlinePassed ? " (Overdue)" : ""}
+                </p>
+              )}
             </div>
           </Link>
           <Link
