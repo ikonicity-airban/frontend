@@ -4,40 +4,53 @@ import { useUser, useUpdateUser } from '../api/users';
 import { ArrowLeftIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { UserRoles } from '../lib/roles';
-import { User } from '../api/types';
 import InputField from '../components/InputField';
 import { useNotification } from '../context/NotificationContext';
+import { format } from 'date-fns';
 
 type UserFormData = {
     name: string;
     email: string;
-    username: string;
     role: UserRoles;
     position?: string;
     department?: string;
     phone?: string;
-    address?: string;
-    hireDate?: string;
+    createdAt?: string;
     employeeId?: string;
 };
+
+
+const toUserFormData = (user: any): UserFormData => {
+    const {
+        id,
+        createdAt,
+        updatedAt,
+        ...formData
+    } = user;
+
+    return formData;
+}
 
 const UserPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { data: user, isLoading } = useUser(id!);
     const updateUser = useUpdateUser(id!);
-    const { register, handleSubmit, reset } = useForm<UserFormData>();
+    const { register, handleSubmit, reset, setValue } = useForm<UserFormData>();
     const { showNotification } = useNotification();
 
     React.useEffect(() => {
         if (user) {
             reset(user);
+            setValue('createdAt', format(new Date(user.createdAt), 'yyyy-MM-dd'));
         }
     }, [user, reset]);
 
     const onSubmit = async (data: UserFormData) => {
         try {
-            await updateUser.mutateAsync(data);
+            const newData = toUserFormData({ ...user, ...data });
+            console.log(newData);
+            await updateUser.mutateAsync(newData);
             showNotification('success', 'User updated successfully');
         } catch (error) {
             console.error('Failed to update user:', error);
@@ -69,14 +82,13 @@ const UserPage: React.FC = () => {
                             <div className="mt-2 grid grid-cols-2 gap-4">
                                 <InputField label="Name" name="name" register={register} />
                                 <InputField label="Email" name="email" type="email" register={register} />
-                                <InputField label="Username" name="username" register={register} />
                                 <InputField label="Role" name="role" register={register} />
                                 <InputField label="Position" name="position" register={register} />
                                 <InputField label="Department" name="department" register={register} />
                                 <InputField label="Phone" name="phone" type="tel" register={register} />
-                                <InputField label="Address" name="address" register={register} />
-                                <InputField label="Hire Date" name="hireDate" type="date" register={register} />
-                                <InputField label="Employee ID" name="employeeId" register={register} />
+                                <InputField label="Hire Date" name="createdAt" type='date' initialValue={format(new Date(user.createdAt), 'yyyy-MM-dd')} register={register} />
+                                <InputField label="Employee ID" name="id" disabled register={register} />
+                                {/* <InputField label="Employee ID" name="id" disabled value={user.id} /> */}
                             </div>
                         </div>
                         <div className="flex justify-end">

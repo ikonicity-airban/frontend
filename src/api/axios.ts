@@ -49,7 +49,10 @@ export const apiRequest = async <T>(config: AxiosRequestConfig): Promise<T> => {
 
     // Add custom error handling here
     if (axiosError.response) {
-      console.error("API Error Response:", axiosError.response.data);
+      console.error(
+        "API Error Response:",
+        (axiosError.response.data as any).message.message
+      );
     } else if (axiosError.request) {
       console.error("API Request Error:", axiosError.request);
     } else {
