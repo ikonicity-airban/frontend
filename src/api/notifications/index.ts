@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "../axios";
 import { Notification } from "../types";
+import emailHandler from "./emailHandler";
 
 // Types for notifications API
 export interface SendEvaluationNotificationDto {
@@ -63,6 +64,10 @@ export const notificationsApi = {
       url: "/notifications/evaluation-reminder",
       data,
     }),
+    
+  // New functions for email notifications
+  fetchAndProcessNotifications: emailHandler.fetchAndProcessNotifications,
+  sendEvaluationStatusNotification: emailHandler.sendEvaluationStatusNotification
 };
 
 // React Query hooks for notifications
@@ -106,3 +111,29 @@ export const useSendEvaluationReminder = () =>
   useMutation({
     mutationFn: notificationsApi.sendEvaluationReminder,
   });
+
+// New hooks for email notifications
+export const useFetchAndProcessNotifications = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: notificationsApi.fetchAndProcessNotifications,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+};
+
+export const useSendEvaluationStatusNotification = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { evaluationId: string; status: string }) => 
+      notificationsApi.sendEvaluationStatusNotification(params.evaluationId, params.status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluations"] });
+    },
+  });
+};
+
+// Export the email handler for direct use
+export { emailHandler };

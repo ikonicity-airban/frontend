@@ -29,15 +29,26 @@ const Login: React.FC = () => {
       { email, password },
       {
         onError: (error) => {
-          let errorMessage = "";
+          let errorMessage = "Something went wrong.";
+          
           if (isAxiosError(error)) {
-            errorMessage =
-              error?.response?.data.message.message ??
-              error?.response?.data.message ??
-              error.message;
-          } else {
-            errorMessage = "Something went wrong.";
+            // Safely extract error message
+            if (error.response?.data) {
+              const data = error.response.data as any;
+              if (typeof data === 'object' && data !== null) {
+                if (typeof data.message === 'object' && data.message !== null && 'message' in data.message) {
+                  errorMessage = data.message.message;
+                } else if (data.message) {
+                  errorMessage = data.message;
+                } else if (data.error) {
+                  errorMessage = data.error;
+                }
+              }
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
           }
+          
           setError(errorMessage);
           showNotification("error", errorMessage);
         },

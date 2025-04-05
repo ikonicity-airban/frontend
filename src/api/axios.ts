@@ -49,10 +49,22 @@ export const apiRequest = async <T>(config: AxiosRequestConfig): Promise<T> => {
 
     // Add custom error handling here
     if (axiosError.response) {
-      console.error(
-        "API Error Response:",
-        (axiosError.response.data as any).message.message
-      );
+      console.error("API Error Response:", axiosError.response.data);
+      // Safely access nested properties
+      try {
+        if (typeof axiosError.response.data === 'object' && 
+            axiosError.response.data !== null && 
+            'message' in axiosError.response.data) {
+          const data = axiosError.response.data as any;
+          if (typeof data.message === 'object' && data.message !== null && 'message' in data.message) {
+            console.error("Error message:", data.message.message);
+          } else {
+            console.error("Error message:", data.message);
+          }
+        }
+      } catch (parseError) {
+        console.error("Error parsing API response:", parseError);
+      }
     } else if (axiosError.request) {
       console.error("API Request Error:", axiosError.request);
     } else {
