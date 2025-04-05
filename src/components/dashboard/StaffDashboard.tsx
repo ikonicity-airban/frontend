@@ -171,7 +171,7 @@ const StaffDashboard: React.FC = () => {
             </div>
           </Link>
           <Link
-            to="/history"
+            to="/evaluations"
             className="group relative bg-white p-6 focus:outline-none rounded-lg border border-gray-300 hover:border-indigo-500"
           >
             <div>

@@ -17,7 +17,9 @@ interface NavItem {
   path: string;
   icon: React.ReactNode;
   roles: UserRoles[];
+  matchPaths?: string[];
 }
+
 const Sidebar: React.FC = () => {
   const { user } = useAuth();
   console.log("🚀 ~ user:", user);
@@ -37,7 +39,7 @@ const Sidebar: React.FC = () => {
     },
     {
       name: "Evaluations",
-      path: "/evaluation/new",
+      path: "/evaluations",
       icon: <ClipboardCheckIcon size={20} />,
       roles: [
         UserRoles.STAFF,
@@ -45,6 +47,7 @@ const Sidebar: React.FC = () => {
         UserRoles.HR,
         UserRoles.DIRECTOR,
       ],
+      matchPaths: ["/evaluations", "/evaluation/"],
     },
     {
       name: "Team Members",
@@ -100,7 +103,11 @@ const Sidebar: React.FC = () => {
       <nav className="mt-5 px-3">
         <div className="space-y-1">
           {filteredNavigation.map((item) => {
-            const isActive = location.pathname === item.path;
+            // Check if current path matches exactly or is a sub-path
+            const isActive = item.matchPaths
+              ? item.matchPaths.some((path) => location.pathname.startsWith(path))
+              : location.pathname === item.path;
+
             return (
               <Link
                 key={item.name}

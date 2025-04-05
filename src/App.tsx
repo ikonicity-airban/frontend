@@ -14,6 +14,7 @@ import OtpVerification from "./pages/OtpVerification";
 import SignupSuccess from "./pages/SignupSuccess";
 import Dashboard from "./pages/Dashboard";
 import EvaluationForm from "./pages/EvaluationForm";
+import EvaluationsPage from "./pages/EvaluationsPage";
 import TeamPage from "./pages/TeamPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -42,6 +43,7 @@ export function App() {
               <Route element={<ProtectedRoute />}>
                 <Route element={<AppLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/evaluations" element={<EvaluationsPage />} />
                   <Route path="/evaluation/:id" element={<EvaluationForm />} />
                   <Route path="/team" element={<TeamPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
