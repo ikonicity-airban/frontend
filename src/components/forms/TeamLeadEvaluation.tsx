@@ -6,18 +6,22 @@ import {
   TeamLeadEvaluationValues,
   teamLeadEvaluationSchema,
 } from "../../types/evaluation";
+import { useLeadEvaluation } from "../../api/evaluations";
 
 interface TeamLeadEvaluationProps {
   defaultValues?: TeamLeadEvaluationValues;
   canEdit: boolean;
-  onSubmit: (data: TeamLeadEvaluationValues) => void;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  setSuccessMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const TeamLeadEvaluation = ({
   defaultValues,
   canEdit,
-  onSubmit,
+  setErrorMessage,
+  setSuccessMessage,
 }: TeamLeadEvaluationProps) => {
+  const teamLeadReview = useLeadEvaluation();
   const navigate = useNavigate();
   const {
     register,
@@ -29,7 +33,19 @@ export const TeamLeadEvaluation = ({
   });
 
   const onFormSubmit = handleSubmit((data) => {
-    onSubmit(data);
+    teamLeadReview.mutate(data, {
+      onSuccess: () => {
+        setSuccessMessage("Team lead evaluation submitted successfully");
+        navigate("/dashboard");
+      },
+      onError: (error) => {
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "An error occurred while submitting the evaluation"
+        );
+      },
+    });
   });
 
   return (
