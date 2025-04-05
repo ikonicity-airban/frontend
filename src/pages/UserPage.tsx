@@ -15,7 +15,6 @@ type UserFormData = {
     position?: string;
     department?: string;
     phone?: string;
-    contact?: string;
     createdAt?: string;
     employeeId?: string;
 };
@@ -87,7 +86,6 @@ const UserPage: React.FC = () => {
                                 <InputField label="Position" name="position" register={register} />
                                 <InputField label="Department" name="department" register={register} />
                                 <InputField label="Phone" name="phone" type="tel" register={register} />
-                                <InputField label="Address" name="contact" register={register} />
                                 <InputField label="Hire Date" name="createdAt" type='date' initialValue={format(new Date(user.createdAt), 'yyyy-MM-dd')} register={register} />
                                 <InputField label="Employee ID" name="id" disabled register={register} />
                                 {/* <InputField label="Employee ID" name="id" disabled value={user.id} /> */}
