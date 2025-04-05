@@ -73,12 +73,12 @@ const EvaluationForm: React.FC = () => {
         userId: user?.id,
         status: isNewEvaluation ? EvaluationStatus.PENDING_STAFF : evaluation?.status,
       };
-      
+
       await selfEvaluation.mutateAsync(combinedData);
       setSuccessMessage("Self-evaluation saved successfully!");
       showNotification("success", "Self-evaluation saved successfully!");
       setErrorMessage("");
-      
+
       // Status-specific navigation
       if (evaluation?.status === EvaluationStatus.PENDING_STAFF) {
         navigate(`/evaluation/${evaluation.id}`);
@@ -87,7 +87,7 @@ const EvaluationForm: React.FC = () => {
       }
     } catch (error) {
       let errorMessage = "Failed to save self-evaluation. Please try again.";
-      
+
       if (error instanceof Error) {
         // Handle Axios errors with improved error extraction
         const axiosError = error as any;
@@ -106,7 +106,7 @@ const EvaluationForm: React.FC = () => {
           errorMessage = axiosError.message;
         }
       }
-      
+
       setErrorMessage(errorMessage);
       showNotification("error", errorMessage);
       setSuccessMessage("");
@@ -250,38 +250,38 @@ const EvaluationForm: React.FC = () => {
           gradeOptions={GRADE_OPTIONS}
         />
 
-        {(user?.role == UserRoles.EMPLOYEE ||
-          user?.role == UserRoles.STAFF) && (
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={() => navigate("/dashboard")}
-              className="py-2 px-4 border border-gray-300 border-[1px] rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => handleSubmit}
-              type="submit"
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              <SaveIcon className="h-5 w-5 mr-2" />
-              Save Evaluation
-            </button>
-          </div>
-        )}
+        {(user?.role === UserRoles.EMPLOYEE ||
+          user?.role === UserRoles.STAFF) && (
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard")}
+                className="py-2 px-4 border border-gray-300 border-[1px] rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleSubmit}
+                type="submit"
+                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <SaveIcon className="h-5 w-5 mr-2" />
+                Save Evaluation
+              </button>
+            </div>
+          )}
       </form>
 
       {(user?.role === UserRoles.LEAD ||
         user?.role === UserRoles.HR ||
         user?.role === UserRoles.DIRECTOR) && (
-        <TeamLeadEvaluation
-          defaultValues={evaluation?.leadReview}
-          canEdit={!!canEditTeamLeadEvaluation}
-          setErrorMessage={setErrorMessage}
-          setSuccessMessage={setSuccessMessage}
-        />
-      )}
+          <TeamLeadEvaluation
+            defaultValues={evaluation?.leadReview}
+            canEdit={!!canEditTeamLeadEvaluation}
+            setErrorMessage={setErrorMessage}
+            setSuccessMessage={setSuccessMessage}
+          />
+        )}
       {(user?.role === UserRoles.HR || user?.role === UserRoles.DIRECTOR) && (
         <HREvaluation
           defaultValues={evaluation?.hrReview}

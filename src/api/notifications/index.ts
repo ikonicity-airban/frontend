@@ -64,10 +64,11 @@ export const notificationsApi = {
       url: "/notifications/evaluation-reminder",
       data,
     }),
-    
+
   // New functions for email notifications
   fetchAndProcessNotifications: emailHandler.fetchAndProcessNotifications,
-  sendEvaluationStatusNotification: emailHandler.sendEvaluationStatusNotification
+  sendEvaluationStatusNotification:
+    emailHandler.sendEvaluationStatusNotification,
 };
 
 // React Query hooks for notifications
@@ -126,8 +127,11 @@ export const useFetchAndProcessNotifications = () => {
 export const useSendEvaluationStatusNotification = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (params: { evaluationId: string; status: string }) => 
-      notificationsApi.sendEvaluationStatusNotification(params.evaluationId, params.status),
+    mutationFn: (params: { evaluationId: string; status: string }) =>
+      notificationsApi.sendEvaluationStatusNotification(
+        params.evaluationId,
+        params.status
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["evaluations"] });

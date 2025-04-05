@@ -100,6 +100,12 @@ export const usersApi = {
       method: "GET",
       url: `/employees/team/${teamId}`,
     }),
+
+  getStaffByTeam: (teamId: string) =>
+    apiRequest<User[]>({
+      method: "GET",
+      url: `/staff/team/${teamId}`,
+    }),
 };
 
 // React Query hooks for users
@@ -197,4 +203,10 @@ export const useEmployeesByTeam = (teamId: string) =>
     queryKey: ["employees", "team", teamId],
     queryFn: () => usersApi.getEmployeesByTeam(teamId),
     enabled: !!teamId,
+  });
+
+export const useStaffByTeam = (teamId: string) =>
+  useQuery({
+    queryKey: ["staff", "team", teamId],
+    queryFn: () => usersApi.getStaffByTeam(teamId),
   });
