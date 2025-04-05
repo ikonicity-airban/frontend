@@ -38,7 +38,7 @@ const EvaluationForm: React.FC = () => {
 
   const canEditSelfEvaluation =
     user &&
-    user?.role === UserRoles.EMPLOYEE &&
+    user?.role === UserRoles.STAFF &&
     (isNewEvaluation || evaluation?.status === EvaluationStatus.PENDING_STAFF);
   const canEditTeamLeadEvaluation =
     evaluation &&
@@ -250,26 +250,25 @@ const EvaluationForm: React.FC = () => {
           gradeOptions={GRADE_OPTIONS}
         />
 
-        {(user?.role === UserRoles.EMPLOYEE ||
-          user?.role === UserRoles.STAFF) && (
-            <div className="flex justify-end space-x-3">
-              <button
-                type="button"
-                onClick={() => navigate("/dashboard")}
-                className="py-2 px-4 border border-gray-300 border-[1px] rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleSubmit}
-                type="submit"
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                <SaveIcon className="h-5 w-5 mr-2" />
-                Save Evaluation
-              </button>
-            </div>
-          )}
+        {(user?.role == UserRoles.STAFF) && (
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard")}
+              className="py-2 px-4 border border-gray-300 border-[1px] rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => handleSubmit}
+              type="submit"
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              <SaveIcon className="h-5 w-5 mr-2" />
+              Save Evaluation
+            </button>
+          </div>
+        )}
       </form>
 
       {(user?.role === UserRoles.LEAD ||

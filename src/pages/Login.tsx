@@ -4,6 +4,7 @@ import { useLogin } from "../api/auth";
 import { LockIcon, MailIcon, AlertCircleIcon } from "lucide-react";
 import { useNotification } from "../context/NotificationContext";
 import { isAxiosError } from "axios";
+import { Link } from "react-router-dom";
 
 import Cookies from "js-cookie";
 import { CONSTANTS } from "../lib/constants";
@@ -131,7 +132,21 @@ const Login: React.FC = () => {
               {loginMutation.isPending ? "Signing in..." : "Sign in"}
             </button>
           </div>
-          <div className="text-sm text-center text-gray-600 space-x-4">
+          <div className="flex items-center justify-between mt-4">
+            <Link
+              to="/forgot-password"
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Forgot password?
+            </Link>
+            <Link
+              to="/signup"
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Create account
+            </Link>
+          </div>
+          <div className="text-sm text-center text-gray-600 space-x-4 mt-6">
             Demo passwords:{" "}
             <button onClick={() => setPassword("secret-password")}>click here</button>
             <div className="mt-2 grid grid-cols-3 gap-2 text-red-400">

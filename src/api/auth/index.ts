@@ -9,17 +9,36 @@ export interface LoginDto {
 }
 
 export interface SignUpDto {
-  username: string;
+  name: string;
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  phone: string;
+  address: string;
 }
 
 export interface ChangePasswordDto {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
+}
+
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+export interface ResetPasswordDto {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface VerifyOtpDto {
+  email: string;
+  otp: string;
+}
+
+export interface RequestOtpDto {
+  email: string;
 }
 
 export interface AuthResponse {
@@ -51,6 +70,34 @@ export const authApi = {
       data,
     }),
 
+  forgotPassword: (data: ForgotPasswordDto) =>
+    apiRequest<{ message: string }>({
+      method: "POST",
+      url: "/auth/forgot-password",
+      data,
+    }),
+
+  resetPassword: (data: ResetPasswordDto) =>
+    apiRequest<{ message: string }>({
+      method: "POST",
+      url: "/auth/reset-password",
+      data,
+    }),
+
+  requestOtp: (data: RequestOtpDto) =>
+    apiRequest<{ message: string }>({
+      method: "POST",
+      url: "/auth/request-otp",
+      data,
+    }),
+
+  verifyOtp: (data: VerifyOtpDto) =>
+    apiRequest<{ message: string; verified: boolean }>({
+      method: "POST",
+      url: "/auth/verify-otp",
+      data,
+    }),
+
   logout: () =>
     apiRequest<{ message: string }>({
       method: "POST",
@@ -76,6 +123,26 @@ export const useSignup = () =>
 export const useChangePassword = () =>
   useMutation({
     mutationFn: authApi.changePassword,
+  });
+
+export const useForgotPassword = () =>
+  useMutation({
+    mutationFn: authApi.forgotPassword,
+  });
+
+export const useResetPassword = () =>
+  useMutation({
+    mutationFn: authApi.resetPassword,
+  });
+
+export const useRequestOtp = () =>
+  useMutation({
+    mutationFn: authApi.requestOtp,
+  });
+
+export const useVerifyOtp = () =>
+  useMutation({
+    mutationFn: authApi.verifyOtp,
   });
 
 export const useLogin = () =>

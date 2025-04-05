@@ -7,6 +7,7 @@ import {
   SettingsIcon,
   BarChartIcon,
   UserCogIcon,
+  UserIcon,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { UserRoles } from "../../lib/roles";
@@ -27,7 +28,7 @@ const Sidebar: React.FC = () => {
       path: "/dashboard",
       icon: <LayoutDashboardIcon size={20} />,
       roles: [
-        UserRoles.EMPLOYEE,
+        UserRoles.STAFF,
         UserRoles.LEAD,
         UserRoles.HR,
         UserRoles.DIRECTOR,
@@ -39,7 +40,7 @@ const Sidebar: React.FC = () => {
       path: "/evaluation/new",
       icon: <ClipboardCheckIcon size={20} />,
       roles: [
-        UserRoles.EMPLOYEE,
+        UserRoles.STAFF,
         UserRoles.LEAD,
         UserRoles.HR,
         UserRoles.DIRECTOR,
@@ -50,6 +51,18 @@ const Sidebar: React.FC = () => {
       path: "/team",
       icon: <UsersIcon size={20} />,
       roles: [
+        UserRoles.LEAD,
+        UserRoles.HR,
+        UserRoles.DIRECTOR,
+        UserRoles.ADMIN,
+      ],
+    },
+    {
+      name: "Profile",
+      path: "/profile",
+      icon: <UserIcon size={20} />,
+      roles: [
+        UserRoles.STAFF,
         UserRoles.LEAD,
         UserRoles.HR,
         UserRoles.DIRECTOR,
