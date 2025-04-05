@@ -38,7 +38,7 @@ const EvaluationForm: React.FC = () => {
 
   const canEditSelfEvaluation =
     user &&
-    user?.role === UserRoles.EMPLOYEE &&
+    user?.role === UserRoles.STAFF &&
     (isNewEvaluation || evaluation?.status === EvaluationStatus.PENDING_STAFF);
   const canEditTeamLeadEvaluation =
     evaluation &&
@@ -220,8 +220,7 @@ const EvaluationForm: React.FC = () => {
           gradeOptions={GRADE_OPTIONS}
         />
 
-        {(user?.role == UserRoles.EMPLOYEE ||
-          user?.role == UserRoles.STAFF) && (
+        {(user?.role == UserRoles.STAFF) && (
           <div className="flex justify-end space-x-3">
             <button
               type="button"
