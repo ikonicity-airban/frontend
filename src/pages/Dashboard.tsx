@@ -11,7 +11,6 @@ const Dashboard: React.FC = () => {
   // Render different dashboard based on user role
   const renderDashboard = () => {
     switch (user?.role) {
-      case UserRoles.EMPLOYEE:
       case UserRoles.STAFF:
         return <StaffDashboard />;
       case UserRoles.LEAD:
@@ -33,7 +32,7 @@ const Dashboard: React.FC = () => {
           {user?.role === UserRoles.ADMIN ? "Admin Dashboard" : "My Dashboard"}
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          {user?.role === UserRoles.EMPLOYEE &&
+          {user?.role === UserRoles.STAFF &&
             "Track your evaluations and performance reviews"}
           {user?.role === UserRoles.LEAD && "Manage your team's evaluations"}
           {user?.role === UserRoles.HR && "Review and process evaluations"}

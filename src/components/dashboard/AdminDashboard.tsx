@@ -76,7 +76,7 @@ const AdminDashboard: React.FC = () => {
   const handleSendReminders = () => {
     sendReminders({
       period: currentSettings?.periodName,
-      type: 'STAFF'
+      type: 'ALL'
     }, {
       onSuccess: () => {
         showNotification(

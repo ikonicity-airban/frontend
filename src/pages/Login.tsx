@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../api/auth";
-import { LockIcon, MailIcon, AlertCircleIcon } from "lucide-react";
+import { LockIcon, MailIcon, AlertCircleIcon, ChevronDownIcon } from "lucide-react";
 import { useNotification } from "../context/NotificationContext";
 import { isAxiosError } from "axios";
+import { Link } from "react-router-dom";
 
 import Cookies from "js-cookie";
 import { CONSTANTS } from "../lib/constants";
@@ -17,7 +18,6 @@ const Login: React.FC = () => {
   const { showNotification } = useNotification();
   const setUser = useAuthStore((state) => state.setUser);
 
-
   const loginMutation = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,15 +28,26 @@ const Login: React.FC = () => {
       { email, password },
       {
         onError: (error) => {
-          let errorMessage = "";
+          let errorMessage = "Something went wrong.";
+          
           if (isAxiosError(error)) {
-            errorMessage =
-              error?.response?.data.message.message ??
-              error?.response?.data.message ??
-              error.message;
-          } else {
-            errorMessage = "Something went wrong.";
+            // Safely extract error message
+            if (error.response?.data) {
+              const data = error.response.data as any;
+              if (typeof data === 'object' && data !== null) {
+                if (typeof data.message === 'object' && data.message !== null && 'message' in data.message) {
+                  errorMessage = data.message.message;
+                } else if (data.message) {
+                  errorMessage = data.message;
+                } else if (data.error) {
+                  errorMessage = data.error;
+                }
+              }
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
           }
+          
           setError(errorMessage);
           showNotification("error", errorMessage);
         },
@@ -49,6 +60,21 @@ const Login: React.FC = () => {
         },
       }
     );
+  };
+
+  const [showDemoPasswords, setShowDemoPasswords] = useState(false);
+
+  const demoPasswords = {
+    Staff: 'secret-password',
+    'Team Lead': 'secret-password',
+    HR: 'secret-password',
+    Director: 'secret-password',
+    Admin: 'secret-password'
+  };
+
+  const handleDemoPasswordClick = (role: string) => {
+    setPassword(demoPasswords[role]);
+    setEmail(role.toLowerCase() + '@example.com');
   };
 
   return (
@@ -120,48 +146,46 @@ const Login: React.FC = () => {
               {loginMutation.isPending ? "Signing in..." : "Sign in"}
             </button>
           </div>
-          <div className="text-sm text-center text-gray-600 space-x-4">
-            Demo passwords:{" "}
-            <button onClick={() => setPassword("secret-password")}>click here</button>
-            <div className="mt-2 grid grid-cols-3 gap-2 text-red-400">
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail("staff@example.com");
-                }}
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                Staff
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmail("lead@example.com")}
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                Team Lead
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmail("hr@example.com")}
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                HR
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmail("director@example.com")}
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                Director
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmail("admin@example.com")}
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                Admin
-              </button>
-            </div>
+          <div className="flex items-center justify-between mt-4">
+            <Link
+              to="/forgot-password"
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Forgot password?
+            </Link>
+            <Link
+              to="/signup"
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Create account
+            </Link>
+          </div>
+          <div className="text-sm text-center text-gray-600 space-x-4 mt-6">
+            <button
+              onClick={() => setShowDemoPasswords(!showDemoPasswords)}
+              className="flex items-center justify-center gap-2 text-indigo-600 hover:text-indigo-500"
+            >
+              Demo passwords
+              <ChevronDownIcon
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  showDemoPasswords ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+            {showDemoPasswords && (
+              <div className="mt-2 grid grid-cols-3 gap-2 text-red-400">
+                {Object.entries(demoPasswords).map(([role, password]) => (
+                  <button
+                    key={role}
+                    type="button"
+                    onClick={() => handleDemoPasswordClick(role)}
+                    className="text-indigo-600 hover:text-indigo-500"
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </form>
       </div>

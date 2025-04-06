@@ -7,6 +7,11 @@ import {
   SettingsIcon,
   BarChartIcon,
   UserCogIcon,
+  ServerIcon,
+  CalendarIcon,
+  ActivityIcon,
+  DownloadIcon,
+  ClipboardListIcon
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { UserRoles } from "../../lib/roles";
@@ -16,10 +21,11 @@ interface NavItem {
   path: string;
   icon: React.ReactNode;
   roles: UserRoles[];
+  matchPaths?: string[];
 }
+
 const Sidebar: React.FC = () => {
   const { user } = useAuth();
-  console.log("🚀 ~ user:", user);
   const location = useLocation();
   const navigation: NavItem[] = [
     {
@@ -27,7 +33,7 @@ const Sidebar: React.FC = () => {
       path: "/dashboard",
       icon: <LayoutDashboardIcon size={20} />,
       roles: [
-        UserRoles.EMPLOYEE,
+        UserRoles.STAFF,
         UserRoles.LEAD,
         UserRoles.HR,
         UserRoles.DIRECTOR,
@@ -36,18 +42,19 @@ const Sidebar: React.FC = () => {
     },
     {
       name: "Evaluations",
-      path: "/evaluation/new",
+      path: "/evaluations",
       icon: <ClipboardCheckIcon size={20} />,
       roles: [
-        UserRoles.EMPLOYEE,
+        UserRoles.STAFF,
         UserRoles.LEAD,
         UserRoles.HR,
         UserRoles.DIRECTOR,
       ],
+      matchPaths: ["/evaluations", "/evaluation/"],
     },
     {
       name: "Team Members",
-      path: "/team",
+      path: "/teams",
       icon: <UsersIcon size={20} />,
       roles: [
         UserRoles.LEAD,
@@ -69,6 +76,36 @@ const Sidebar: React.FC = () => {
       roles: [UserRoles.ADMIN],
     },
     {
+      name: "Activity Log",
+      path: "/activity",
+      icon: <ActivityIcon size={20} />,
+      roles: [UserRoles.ADMIN],
+    },
+    {
+      name: "Timeline",
+      path: "/timeline",
+      icon: <CalendarIcon size={20} />,
+      roles: [UserRoles.ADMIN],
+    },
+    {
+      name: "Forms",
+      path: "/forms",
+      icon: <ClipboardListIcon size={20} />,
+      roles: [UserRoles.ADMIN],
+    },
+    {
+      name: "Export Reports",
+      path: "/export",
+      icon: <DownloadIcon size={20} />,
+      roles: [UserRoles.ADMIN],
+    },
+    {
+      name: "System Health",
+      path: "/system",
+      icon: <ServerIcon size={20} />,
+      roles: [UserRoles.ADMIN],
+    },
+    {
       name: "Settings",
       path: "/settings",
       icon: <SettingsIcon size={20} />,
@@ -80,14 +117,18 @@ const Sidebar: React.FC = () => {
     (item) => user && item.roles.includes(user.role)
   );
   return (
-    <div className="bg-indigo-800 text-white w-64 flex-shrink-0">
+    <div className="bg-indigo-800 text-white w-64 flex-shrink-0 h-full overflow-y-auto">
       <div className="h-16 flex items-center px-6">
         <div className="text-xl font-bold">Staff Evaluation</div>
       </div>
-      <nav className="mt-5 px-3">
+      <nav className="mt-5 px-3 pb-10">
         <div className="space-y-1">
           {filteredNavigation.map((item) => {
-            const isActive = location.pathname === item.path;
+            // Check if current path matches exactly or is a sub-path
+            const isActive = item.matchPaths
+              ? item.matchPaths.some((path) => location.pathname.startsWith(path))
+              : location.pathname === item.path;
+
             return (
               <Link
                 key={item.name}
