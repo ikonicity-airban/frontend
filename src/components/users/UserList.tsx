@@ -66,6 +66,7 @@ const UserList: React.FC = () => {
                         <button
                             type="button"
                             className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                            onClick={() => navigate('/users/new')}
                         >
                             <PlusIcon className="h-4 w-4 mr-2" />
                             Add User
@@ -115,7 +116,7 @@ const UserList: React.FC = () => {
                                                     <div className="font-medium text-gray-900">
                                                         {user.name}
                                                     </div>
-                                                    <div className="text-gray-500">{user.username}</div>
+                                                    <div className="text-gray-500">{user.position}</div>
                                                 </td>
                                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                                     {user.email}
@@ -133,13 +134,19 @@ const UserList: React.FC = () => {
                                                 </td>
                                                 <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
                                                     <button
-                                                        onClick={() => navigate(`/users/${user.id}`)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            navigate(`/users/${user.id}`)
+                                                        }}
                                                         className="text-indigo-600 hover:text-indigo-900 mr-4"
                                                     >
                                                         <PencilIcon className="h-4 w-4" />
                                                     </button>
                                                     <button
-                                                        onClick={() => deleteUser.mutate(user.id)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            deleteUser.mutate(user.id);
+                                                        }}
                                                         className="text-red-600 hover:text-red-900"
                                                     >
                                                         <TrashIcon className="h-4 w-4" />

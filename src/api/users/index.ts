@@ -92,13 +92,13 @@ export const usersApi = {
   getAllEmployees: () =>
     apiRequest<User[]>({
       method: "GET",
-      url: "/employees",
+      url: "/users?role=employee",
     }),
 
   getEmployeesByTeam: (teamId: string) =>
     apiRequest<User[]>({
       method: "GET",
-      url: `/employees/team/${teamId}`,
+      url: `/users?role=employee&teamId=${teamId}`,
     }),
 
   getStaffByTeam: (teamId: string) =>
