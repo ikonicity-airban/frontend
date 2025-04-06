@@ -57,6 +57,75 @@ interface SendRemindersDto {
   type?: "ALL" | "STAFF" | "LEAD" | "HR" | "DIRECTOR";
 }
 
+interface Team {
+  id: string;
+  name: string;
+  description?: string;
+  teamLeadId?: string;
+  teamLead?: User;
+  members: TeamMember[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface TeamMember {
+  id: string;
+  teamId: string;
+  userId: string;
+  isLead: boolean;
+  user: User;
+}
+
+interface CreateTeamDto {
+  name: string;
+  description?: string;
+  teamLeadId?: string;
+}
+
+interface TeamMemberDto {
+  userId: string;
+  isLead?: boolean;
+}
+
+interface Activity {
+  id: string;
+  userId: string;
+  userName: string;
+  action: string;
+  entityType: string;
+  entityId?: string;
+  details?: string;
+  createdAt: string;
+}
+
+interface ActivityLogParams {
+  page?: number;
+  limit?: number;
+  entityType?: string;
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+interface ActivityLogResponse {
+  data: Activity[];
+  total: number;
+}
+
+interface SystemSettings {
+  companyName: string;
+  timeZone: string;
+  emailNotifications: boolean;
+  systemNotifications: boolean;
+  defaultEvaluationPeriod: string;
+  reviewDeadlineDays: number;
+  twoFactorAuth: boolean;
+  passwordPolicy: string;
+}
+
+// Re-export types properly
+export type { User, Team, TeamMember, Activity, SystemSettings };
+
 // API functions with return types
 export const adminApi = {
   getAllUsers: (): Promise<User[]> =>
@@ -166,6 +235,101 @@ export const adminApi = {
       method: "GET",
       url: "/admin/reports/export",
       params: period ? { period } : undefined,
+    }),
+
+  // Team Management
+  getAllTeams: (): Promise<Team[]> =>
+    apiRequest<Team[]>({
+      method: "GET",
+      url: "/teams",
+    }),
+
+  createTeam: (data: CreateTeamDto): Promise<Team> =>
+    apiRequest<Team>({
+      method: "POST",
+      url: "/teams",
+      data,
+    }),
+
+  getTeam: (id: string): Promise<Team> =>
+    apiRequest<Team>({
+      method: "GET",
+      url: `/teams/${id}`,
+    }),
+
+  addTeamMember: (teamId: string, data: TeamMemberDto): Promise<TeamMember> =>
+    apiRequest<TeamMember>({
+      method: "POST",
+      url: `/teams/${teamId}/members`,
+      data,
+    }),
+
+  removeTeamMember: (teamId: string, userId: string): Promise<void> =>
+    apiRequest<void>({
+      method: "DELETE",
+      url: `/teams/${teamId}/members/${userId}`,
+    }),
+
+  updateTeamLead: (teamId: string, teamLeadId: string): Promise<Team> =>
+    apiRequest<Team>({
+      method: "PATCH",
+      url: `/teams/${teamId}/lead`,
+      data: { teamLeadId },
+    }),
+
+  updateMemberRole: (
+    teamId: string,
+    userId: string,
+    isLead: boolean
+  ): Promise<TeamMember> =>
+    apiRequest<TeamMember>({
+      method: "PATCH",
+      url: `/teams/${teamId}/members/${userId}/role`,
+      data: { isLead },
+    }),
+
+  // Activity Tracking
+  getActivityLogs: (
+    params: ActivityLogParams = {}
+  ): Promise<ActivityLogResponse> => {
+    const queryParams = new URLSearchParams();
+    if (params.page) queryParams.append("page", String(params.page));
+    if (params.limit) queryParams.append("limit", String(params.limit));
+    if (params.entityType) queryParams.append("entityType", params.entityType);
+    if (params.userId) queryParams.append("userId", params.userId);
+    if (params.startDate) queryParams.append("startDate", params.startDate);
+    if (params.endDate) queryParams.append("endDate", params.endDate);
+
+    return apiRequest<ActivityLogResponse>({
+      method: "GET",
+      url: `/admin/activity?${queryParams.toString()}`,
+    });
+  },
+
+  logActivity: (data: {
+    action: string;
+    entityType: string;
+    entityId?: string;
+    details?: string;
+  }): Promise<Activity> =>
+    apiRequest<Activity>({
+      method: "POST",
+      url: "/admin/activity",
+      data,
+    }),
+
+  // System Settings
+  getSystemSettings: (): Promise<SystemSettings> =>
+    apiRequest<SystemSettings>({
+      method: "GET",
+      url: "/admin/settings/system",
+    }),
+
+  saveSystemSettings: (data: SystemSettings): Promise<SystemSettings> =>
+    apiRequest<SystemSettings>({
+      method: "POST",
+      url: "/admin/settings/system",
+      data,
     }),
 };
 
@@ -305,6 +469,98 @@ export const useExportEvaluationData = () =>
   useMutation({
     mutationFn: adminApi.exportEvaluationData,
   });
+
+// Team Management Mutations/Queries
+export const useTeams = () =>
+  useQuery<Team[]>({
+    queryKey: ["teams"],
+    queryFn: adminApi.getAllTeams,
+  });
+
+export const useCreateTeam = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: adminApi.createTeam,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
+    },
+  });
+};
+
+export const useAddTeamMember = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ teamId, data }: { teamId: string; data: TeamMemberDto }) =>
+      adminApi.addTeamMember(teamId, data),
+    onSuccess: (_, { teamId }) => {
+      queryClient.invalidateQueries({ queryKey: ["teams", teamId] });
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
+    },
+  });
+};
+
+export const useRemoveTeamMember = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ teamId, userId }: { teamId: string; userId: string }) =>
+      adminApi.removeTeamMember(teamId, userId),
+    onSuccess: (_, { teamId }) => {
+      queryClient.invalidateQueries({ queryKey: ["teams", teamId] });
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
+    },
+  });
+};
+
+export const useUpdateTeamLead = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      teamId,
+      teamLeadId,
+    }: {
+      teamId: string;
+      teamLeadId: string;
+    }) => adminApi.updateTeamLead(teamId, teamLeadId),
+    onSuccess: (_, { teamId }) => {
+      queryClient.invalidateQueries({ queryKey: ["teams", teamId] });
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
+    },
+  });
+};
+
+export const useUpdateMemberRole = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      teamId,
+      userId,
+      isLead,
+    }: {
+      teamId: string;
+      userId: string;
+      isLead: boolean;
+    }) => adminApi.updateMemberRole(teamId, userId, isLead),
+    onSuccess: (_, { teamId }) => {
+      queryClient.invalidateQueries({ queryKey: ["teams", teamId] });
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
+    },
+  });
+};
+
+// Activity Logs Query
+export const useActivityLogs = (params: ActivityLogParams = {}) =>
+  useQuery<ActivityLogResponse>({
+    queryKey: ["admin", "activity", params],
+    queryFn: () => adminApi.getActivityLogs(params),
+    placeholderData: (previousData) => previousData,
+  });
+
+// Log Activity Mutation
+export const useLogActivity = () => {
+  return useMutation({
+    mutationFn: adminApi.logActivity,
+  });
+};
 
 // Types for DTOs
 export interface UpdateUserRoleDto {

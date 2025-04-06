@@ -14,17 +14,34 @@ export interface CreateUserDto {
   lastName: string;
   username: string;
   role?: UserRoles;
+  phone?: string;
+  address?: string;
 }
 
-export interface UpdateUserDto extends Partial<CreateUserDto> {}
+export interface UpdateUserDto extends Omit<Partial<CreateUserDto>, 'role'> { }
+
+interface UsersQueryParams {
+  page?: number;
+  limit?: number;
+  role?: string;
+  search?: string;
+}
 
 // User API functions
 export const usersApi = {
-  getAll: () =>
-    apiRequest<User[]>({
+  getAll: (params: UsersQueryParams = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.page) queryParams.append('page', String(params.page));
+    if (params.limit) queryParams.append('limit', String(params.limit));
+    // Only add role if it's not 'all'
+    if (params.role && params.role !== 'all') queryParams.append('role', params.role);
+    if (params.search) queryParams.append('search', params.search);
+
+    return apiRequest<{ data: User[], total: number }>({
       method: "GET",
-      url: "/users",
-    }),
+      url: `/users?${queryParams.toString()}`,
+    });
+  },
 
   getById: (id: string) =>
     apiRequest<User>({
@@ -51,68 +68,15 @@ export const usersApi = {
       method: "DELETE",
       url: `/users/${id}`,
     }),
-
-  // Role-specific endpoints
-  getAllStaff: () =>
-    apiRequest<User[]>({
-      method: "GET",
-      url: "/staff",
-    }),
-
-  getStaffByTeamLead: (leadId: string) =>
-    apiRequest<User[]>({
-      method: "GET",
-      url: `/staff/lead/${leadId}`,
-    }),
-
-  getAllLeads: () =>
-    apiRequest<User[]>({
-      method: "GET",
-      url: "/leads",
-    }),
-
-  getTeamMembers: (leadId: string) =>
-    apiRequest<User[]>({
-      method: "GET",
-      url: `/leads/${leadId}/team`,
-    }),
-
-  getAllHr: () =>
-    apiRequest<User[]>({
-      method: "GET",
-      url: "/hr",
-    }),
-
-  getAllDirectors: () =>
-    apiRequest<User[]>({
-      method: "GET",
-      url: "/directors",
-    }),
-
-  getAllEmployees: () =>
-    apiRequest<User[]>({
-      method: "GET",
-      url: "/users?role=employee",
-    }),
-
-  getEmployeesByTeam: (teamId: string) =>
-    apiRequest<User[]>({
-      method: "GET",
-      url: `/users?role=employee&teamId=${teamId}`,
-    }),
-
-  getStaffByTeam: (teamId: string) =>
-    apiRequest<User[]>({
-      method: "GET",
-      url: `/staff/team/${teamId}`,
-    }),
 };
 
 // React Query hooks for users
-export const useUsers = () =>
-  useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: usersApi.getAll,
+export const useUsers = (params: UsersQueryParams = {}) =>
+  useQuery<{ data: User[]; total: number }>({
+    // Include all params in the query key for proper caching
+    queryKey: ["users", params.page, params.limit, params.role, params.search],
+    queryFn: () => usersApi.getAll(params),
+    placeholderData: (previousData) => previousData,
   });
 
 export const useUser = (id: string) =>
@@ -152,61 +116,3 @@ export const useDeleteUser = () => {
     },
   });
 };
-
-// Role-specific hooks
-export const useStaff = () =>
-  useQuery({
-    queryKey: ["staff"],
-    queryFn: usersApi.getAllStaff,
-  });
-
-export const useStaffByTeamLead = (leadId: string) =>
-  useQuery({
-    queryKey: ["staff", "lead", leadId],
-    queryFn: () => usersApi.getStaffByTeamLead(leadId),
-    enabled: !!leadId,
-  });
-
-export const useLeads = () =>
-  useQuery({
-    queryKey: ["leads"],
-    queryFn: usersApi.getAllLeads,
-  });
-
-export const useTeamMembers = (leadId: string) =>
-  useQuery({
-    queryKey: ["team", leadId],
-    queryFn: () => usersApi.getTeamMembers(leadId),
-    enabled: !!leadId,
-  });
-
-export const useHrUsers = () =>
-  useQuery({
-    queryKey: ["hr"],
-    queryFn: usersApi.getAllHr,
-  });
-
-export const useDirectors = () =>
-  useQuery({
-    queryKey: ["directors"],
-    queryFn: usersApi.getAllDirectors,
-  });
-
-export const useEmployees = () =>
-  useQuery({
-    queryKey: ["employees"],
-    queryFn: usersApi.getAllEmployees,
-  });
-
-export const useEmployeesByTeam = (teamId: string) =>
-  useQuery({
-    queryKey: ["employees", "team", teamId],
-    queryFn: () => usersApi.getEmployeesByTeam(teamId),
-    enabled: !!teamId,
-  });
-
-export const useStaffByTeam = (teamId: string) =>
-  useQuery({
-    queryKey: ["staff", "team", teamId],
-    queryFn: () => usersApi.getStaffByTeam(teamId),
-  });

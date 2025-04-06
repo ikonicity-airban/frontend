@@ -73,7 +73,7 @@ export const authApi = {
   forgotPassword: (data: ForgotPasswordDto) =>
     apiRequest<{ message: string }>({
       method: "POST",
-      url: "/auth/forgot-password",
+      url: "/auth/request-password-reset",
       data,
     }),
 
