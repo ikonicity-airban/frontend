@@ -30,7 +30,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import UserList from "./components/users/UserList";
 import UserPage from "./pages/UserPage";
 import TeamList from "./components/teams/TeamList";
-import TeamForm from "./components/teams/TeamForm";
+import TeamFormPage from "./pages/TeamFormPage";
 
 export function App() {
   return (
@@ -39,13 +39,13 @@ export function App() {
         <AuthProvider>
           <Router>
             <Routes>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/otp-verification" element={<OtpVerification />} />
               <Route path="/signup-success" element={<SignupSuccess />} />
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route element={<ProtectedRoute />}>
                 <Route element={<AppLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
@@ -53,8 +53,8 @@ export function App() {
                   <Route path="/evaluation/:id" element={<EvaluationForm />} />
                   <Route path="/team" element={<TeamPage />} />
                   <Route path="/teams" element={<TeamList />} />
-                  <Route path="/teams/new" element={<TeamForm />} />
-                  <Route path="/teams/:id/edit" element={<TeamForm />} />
+                  <Route path="/teams/new" element={<TeamFormPage />} />
+                  <Route path="/teams/:id/edit" element={<TeamFormPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/reports" element={<ReportsPage />} />
                   <Route path="/settings" element={<SettingsPage />} />

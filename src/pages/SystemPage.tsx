@@ -3,7 +3,6 @@ import {
   ServerIcon, 
   CheckCircleIcon, 
   AlertCircleIcon, 
-  MemoryIcon, 
   DatabaseIcon, 
   MailIcon, 
   ActivityIcon, 
@@ -163,7 +162,7 @@ const SystemPage: React.FC = () => {
             <div className="p-6 bg-indigo-50 rounded-lg">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <MemoryIcon className="h-8 w-8 text-indigo-500" />
+                  <ServerIcon className="h-8 w-8 text-indigo-500" />
                 </div>
                 <div className="ml-5">
                   <h3 className="text-lg font-medium text-gray-900">

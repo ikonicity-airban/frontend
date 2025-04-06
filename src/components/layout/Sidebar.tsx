@@ -54,7 +54,7 @@ const Sidebar: React.FC = () => {
     },
     {
       name: "Team Members",
-      path: "/team",
+      path: "/teams",
       icon: <UsersIcon size={20} />,
       roles: [
         UserRoles.LEAD,

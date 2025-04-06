@@ -112,8 +112,19 @@ interface ActivityLogResponse {
   total: number;
 }
 
+interface SystemSettings {
+  companyName: string;
+  timeZone: string;
+  emailNotifications: boolean;
+  systemNotifications: boolean;
+  defaultEvaluationPeriod: string;
+  reviewDeadlineDays: number;
+  twoFactorAuth: boolean;
+  passwordPolicy: string;
+}
+
 // Re-export types properly
-export type { User, Team, TeamMember, Activity };
+export type { User, Team, TeamMember, Activity, SystemSettings };
 
 // API functions with return types
 export const adminApi = {
@@ -304,6 +315,20 @@ export const adminApi = {
     apiRequest<Activity>({
       method: "POST",
       url: "/admin/activity",
+      data,
+    }),
+
+  // System Settings
+  getSystemSettings: (): Promise<SystemSettings> =>
+    apiRequest<SystemSettings>({
+      method: "GET",
+      url: "/admin/settings/system",
+    }),
+
+  saveSystemSettings: (data: SystemSettings): Promise<SystemSettings> =>
+    apiRequest<SystemSettings>({
+      method: "POST",
+      url: "/admin/settings/system",
       data,
     }),
 };
