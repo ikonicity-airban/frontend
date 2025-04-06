@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PlusIcon, PencilIcon, TrashIcon, SearchIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
-    useUsers,
+    useUsers,   
     useDeleteUser,
 } from '../../api/users';
 import { User } from '../../api/types'; 

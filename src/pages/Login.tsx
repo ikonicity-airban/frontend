@@ -29,7 +29,7 @@ const Login: React.FC = () => {
       {
         onError: (error) => {
           let errorMessage = "Something went wrong.";
-          
+
           if (isAxiosError(error)) {
             // Safely extract error message
             if (error.response?.data) {
@@ -47,7 +47,7 @@ const Login: React.FC = () => {
               errorMessage = error.message;
             }
           }
-          
+
           setError(errorMessage);
           showNotification("error", errorMessage);
         },
@@ -66,14 +66,14 @@ const Login: React.FC = () => {
 
   const demoPasswords = {
     Staff: 'secret-password',
-    'Team Lead': 'secret-password',
+    Lead: 'secret-password',
     HR: 'secret-password',
     Director: 'secret-password',
     Admin: 'secret-password'
   };
 
   const handleDemoPasswordClick = (role: string) => {
-    setPassword(demoPasswords[role]);
+    setPassword(demoPasswords[role as keyof typeof demoPasswords]);
     setEmail(role.toLowerCase() + '@example.com');
   };
 
@@ -162,19 +162,19 @@ const Login: React.FC = () => {
           </div>
           <div className="text-sm text-center text-gray-600 space-x-4 mt-6">
             <button
+              type="button"
               onClick={() => setShowDemoPasswords(!showDemoPasswords)}
               className="flex items-center justify-center gap-2 text-indigo-600 hover:text-indigo-500"
             >
               Demo passwords
               <ChevronDownIcon
-                className={`w-4 h-4 transition-transform duration-200 ${
-                  showDemoPasswords ? 'rotate-180' : ''
-                }`}
+                className={`w-4 h-4 transition-transform duration-200 ${showDemoPasswords ? 'rotate-180' : ''
+                  }`}
               />
             </button>
             {showDemoPasswords && (
               <div className="mt-2 grid grid-cols-3 gap-2 text-red-400">
-                {Object.entries(demoPasswords).map(([role, password]) => (
+                {Object.entries(demoPasswords).map(([role]) => (
                   <button
                     key={role}
                     type="button"
