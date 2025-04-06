@@ -19,12 +19,18 @@ import TeamPage from "./pages/TeamPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
+import ActivityLogPage from "./pages/ActivityLogPage";
+import SystemPage from "./pages/SystemPage";
+import TimelinePage from "./pages/TimelinePage";
+import FormsPage from "./pages/FormsPage";
 import AppLayout from "./components/layout/AppLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import queryClient from "./api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import UserList from "./components/users/UserList";
 import UserPage from "./pages/UserPage";
+import TeamList from "./components/teams/TeamList";
+import TeamForm from "./components/teams/TeamForm";
 
 export function App() {
   return (
@@ -46,11 +52,18 @@ export function App() {
                   <Route path="/evaluations" element={<EvaluationsPage />} />
                   <Route path="/evaluation/:id" element={<EvaluationForm />} />
                   <Route path="/team" element={<TeamPage />} />
+                  <Route path="/teams" element={<TeamList />} />
+                  <Route path="/teams/new" element={<TeamForm />} />
+                  <Route path="/teams/:id/edit" element={<TeamForm />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/reports" element={<ReportsPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/users" element={<UserList />} />
                   <Route path="/users/:id" element={<UserPage />} />
+                  <Route path="/activity" element={<ActivityLogPage />} />
+                  <Route path="/system" element={<SystemPage />} />
+                  <Route path="/timeline" element={<TimelinePage />} />
+                  <Route path="/forms" element={<FormsPage />} />
                 </Route>
               </Route>
             </Routes>

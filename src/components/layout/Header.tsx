@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { BellIcon, LogOutIcon, CheckIcon } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useNotifications, useMarkAsRead, useMarkAllAsRead } from "../../api/notifications";
@@ -159,19 +159,24 @@ const Header: React.FC = () => {
               )}
             </div>
             <div className="ml-4 flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium">
-                  {user?.name.charAt(0)}
+              <Link 
+                to="/profile" 
+                className="flex items-center space-x-3 hover:text-indigo-600"
+              >
+                <div className="flex-shrink-0">
+                  <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium">
+                    {user?.name.charAt(0)}
+                  </div>
                 </div>
-              </div>
-              <div className="ml-3">
-                <div className="text-sm font-medium text-gray-700">
-                  {user?.name}
+                <div className="ml-3">
+                  <div className="text-sm font-medium text-gray-700">
+                    {user?.name}
+                  </div>
+                  <div className="text-xs text-gray-500 capitalize">
+                    {user?.role}
+                  </div>
                 </div>
-                <div className="text-xs text-gray-500 capitalize">
-                  {user?.role}
-                </div>
-              </div>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="ml-4 p-2 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

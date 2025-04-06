@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../api/auth";
-import { LockIcon, MailIcon, AlertCircleIcon } from "lucide-react";
+import { LockIcon, MailIcon, AlertCircleIcon, ChevronDownIcon } from "lucide-react";
 import { useNotification } from "../context/NotificationContext";
 import { isAxiosError } from "axios";
 import { Link } from "react-router-dom";
@@ -17,7 +17,6 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const setUser = useAuthStore((state) => state.setUser);
-
 
   const loginMutation = useLogin();
 
@@ -61,6 +60,21 @@ const Login: React.FC = () => {
         },
       }
     );
+  };
+
+  const [showDemoPasswords, setShowDemoPasswords] = useState(false);
+
+  const demoPasswords = {
+    Staff: 'secret-password',
+    'Team Lead': 'secret-password',
+    HR: 'secret-password',
+    Director: 'secret-password',
+    Admin: 'secret-password'
+  };
+
+  const handleDemoPasswordClick = (role: string) => {
+    setPassword(demoPasswords[role]);
+    setEmail(role.toLowerCase() + '@example.com');
   };
 
   return (
@@ -147,47 +161,31 @@ const Login: React.FC = () => {
             </Link>
           </div>
           <div className="text-sm text-center text-gray-600 space-x-4 mt-6">
-            Demo passwords:{" "}
-            <button onClick={() => setPassword("secret-password")}>click here</button>
-            <div className="mt-2 grid grid-cols-3 gap-2 text-red-400">
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail("staff@example.com");
-                }}
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                Staff
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmail("lead@example.com")}
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                Team Lead
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmail("hr@example.com")}
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                HR
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmail("director@example.com")}
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                Director
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmail("admin@example.com")}
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                Admin
-              </button>
-            </div>
+            <button
+              onClick={() => setShowDemoPasswords(!showDemoPasswords)}
+              className="flex items-center justify-center gap-2 text-indigo-600 hover:text-indigo-500"
+            >
+              Demo passwords
+              <ChevronDownIcon
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  showDemoPasswords ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+            {showDemoPasswords && (
+              <div className="mt-2 grid grid-cols-3 gap-2 text-red-400">
+                {Object.entries(demoPasswords).map(([role, password]) => (
+                  <button
+                    key={role}
+                    type="button"
+                    onClick={() => handleDemoPasswordClick(role)}
+                    className="text-indigo-600 hover:text-indigo-500"
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </form>
       </div>
